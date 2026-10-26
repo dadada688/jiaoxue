@@ -301,14 +301,15 @@ function renderRandQuiz(app,h){
     list:list, idx:idx,
     title:"随机练习",
     navTo:function(i){ go("#/rand/"+i); },
-    backTo:"#/random"
+    backTo:"#/random",
+    fresh:true
   });
 }
 
 /* ================= 答题视图（通用） ================= */
 function quizView(app, ctx){
   var q=ctx.list[ctx.idx];
-  var rec=state.rec[q.id];
+  var rec=ctx.fresh?null:state.rec[q.id];
 
   var head=el('<div class="qhead"><span class="pos">'+ctx.title+' · 第 '+(ctx.idx+1)+' / '+ctx.list.length+' 题</span><span class="pos"><a href="'+ctx.backTo+'">‹ 返回</a></span></div>');
   app.appendChild(head);
