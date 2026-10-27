@@ -245,6 +245,8 @@ function renderQuiz(app, h){
   var list=(byType[t]||[]).slice(g,g+GROUP_SIZE);
   if(!list.length){ app.appendChild(el('<div class="empty">题组不存在</div>')); return; }
   idx=Math.max(0,Math.min(idx,list.length-1));
+  // 自动跳到组内第一道未做的题，全部做完则保留当前位置
+  for(var i=0;i<list.length;i++){ if(!isDone(list[i].id)){ idx=i; break; } }
   quizView(app, {
     list:list, idx:idx,
     title: TYPE_META[t].name+" · 第 "+(g+1)+"–"+(g+list.length)+" 题",
