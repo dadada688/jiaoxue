@@ -245,8 +245,10 @@ function renderQuiz(app, h){
   var list=(byType[t]||[]).slice(g,g+GROUP_SIZE);
   if(!list.length){ app.appendChild(el('<div class="empty">题组不存在</div>')); return; }
   idx=Math.max(0,Math.min(idx,list.length-1));
-  // 自动跳到组内第一道未做的题，全部做完则保留当前位置
-  for(var i=0;i<list.length;i++){ if(!isDone(list[i].id)){ idx=i; break; } }
+  // 仅在 URL idx=0 且第 0 题已做过时，自动跳到第一道未做的题（尊重用户手动翻页）
+  if(idx===0 && isDone(list[0].id)){
+    for(var i=1;i<list.length;i++){ if(!isDone(list[i].id)){ idx=i; break; } }
+  }
   quizView(app, {
     list:list, idx:idx,
     title: TYPE_META[t].name+" · 第 "+(g+1)+"–"+(g+list.length)+" 题",
@@ -331,6 +333,28 @@ function quizView(app, ctx){
     return ansBox;
   }
 
+  // 错题本管理按钮：答对/已移除→显示"加入错题本"；答错/已加入→显示"从错题本移除"
+  function addWrongBtn(){
+    var wrongBtn = el('<div class="btnrow" style="margin-top:10px;"></div>');
+    var inWrong = !!state.wrong[q.id];
+    var btn = el('<button class="btn">'+(inWrong?"从错题本移除":"加入错题本")+'</button>');
+    btn.onclick=function(){
+      if(state.wrong[q.id]){
+        removeWrong(q.id);
+        btn.textContent="加入错题本";
+        toast("已从错题本移除");
+      }else{
+        state.wrong[q.id] = Date.now();
+        save();
+        btn.textContent="从错题本移除";
+        toast("已加入错题本");
+      }
+      refreshWrongBadge();
+    };
+    wrongBtn.appendChild(btn);
+    card.appendChild(wrongBtn);
+  }
+
   if(q.type==="choice"){
     var opts=el('<div class="opts"></div>');
     var letters=["A","B","C","D"];
@@ -365,9 +389,11 @@ function quizView(app, ctx){
       markDone(q.id, ok);
       card.appendChild(el('<div class="verdict '+(ok?"ok":"bad")+'">'+(ok?"✓ 回答正确":"✗ 回答错误，正确答案："+q.answer+"（已加入错题本）")+'</div>'));
       buildAns();
+      addWrongBtn();
       refreshWrongBadge();
     };
-    if(rec){ opts.classList.add("lock"); buildAns(); }
+    // 已做过的题：锁定选项并显示解析，同时显示错题本管理按钮
+    if(rec){ opts.classList.add("lock"); buildAns(); addWrongBtn(); }
     else{ card.appendChild(submitWrap); }
   }else{
     var showBtn=el('<div class="btnrow"><button class="btn primary">查看答案与解析</button></div>');
@@ -376,14 +402,15 @@ function quizView(app, ctx){
       showBtn.remove();
       buildAns();
       var sa=el('<div class="selfassess"><button class="sa-ok">自评：我会了</button><button class="sa-no">自评：还不会</button></div>');
-      sa.children[0].onclick=function(){ markDone(q.id,true); toast("已标记为掌握"); sa.remove(); refreshWrongBadge(); };
-      sa.children[1].onclick=function(){ markDone(q.id,false); toast("已加入错题本"); sa.remove(); refreshWrongBadge(); };
+      sa.children[0].onclick=function(){ markDone(q.id,true); toast("已标记为掌握"); sa.remove(); addWrongBtn(); refreshWrongBadge(); };
+      sa.children[1].onclick=function(){ markDone(q.id,false); toast("已加入错题本"); sa.remove(); addWrongBtn(); refreshWrongBadge(); };
       card.appendChild(sa);
     };
     card.appendChild(showBtn);
     if(rec){
       showBtn.remove();
       buildAns();
+      addWrongBtn();
     }
   }
   app.appendChild(card);
