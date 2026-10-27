@@ -231,7 +231,12 @@ function renderHome(app){
         var grp=list.slice(g,g+GROUP_SIZE), gs=statOf(grp);
         var label = "第 "+(g+1)+" – "+(g+grp.length)+" 题";
         var item=el('<div class="gitem"><div class="gt"><b>'+label+'</b><div class="gm">已做 '+gs.done+'/'+gs.total+' · 正确 '+gs.right+'</div><div class="pbar" style="margin-top:6px;"><i style="width:'+fmtPct(gs.done,gs.total)+'"></i></div></div><span class="arr">›</span></div>');
-        item.onclick=function(){ go("#/quiz/"+t+"/"+g+"/0"); };
+        item.onclick=function(){
+          // 从首页进入题组时，定位到组内第一道未做的题；组内翻页不受影响
+          var target=0;
+          for(var i=0;i<grp.length;i++){ if(!isDone(grp[i].id)){ target=i; break; } }
+          go("#/quiz/"+t+"/"+g+"/"+target);
+        };
         app.appendChild(item);
       })(t,g);
     }
@@ -245,10 +250,6 @@ function renderQuiz(app, h){
   var list=(byType[t]||[]).slice(g,g+GROUP_SIZE);
   if(!list.length){ app.appendChild(el('<div class="empty">题组不存在</div>')); return; }
   idx=Math.max(0,Math.min(idx,list.length-1));
-  // 仅在 URL idx=0 且第 0 题已做过时，自动跳到第一道未做的题（尊重用户手动翻页）
-  if(idx===0 && isDone(list[0].id)){
-    for(var i=1;i<list.length;i++){ if(!isDone(list[i].id)){ idx=i; break; } }
-  }
   quizView(app, {
     list:list, idx:idx,
     title: TYPE_META[t].name+" · 第 "+(g+1)+"–"+(g+list.length)+" 题",
