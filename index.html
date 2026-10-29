@@ -463,6 +463,13 @@ function renderWrong(app){
   }
   app.appendChild(statCard);
 
+  /* 导出今知错题包 */
+  var expRow=el('<div class="btnrow" style="margin-bottom:14px;"><button class="btn primary">导出今知错题包（ZIP，共 '+wl.length+' 道）</button></div>');
+  expRow.querySelector("button").onclick=function(){
+    exportJinzhiPackage(wl, "高数错题包");
+  };
+  app.appendChild(expRow);
+
   var show = wrongFilter ? wl.filter(function(q){return q.tags.indexOf(wrongFilter)>=0;}) : wl;
   if(wrongFilter){
     app.appendChild(el('<p class="sub">已筛选标签「'+esc(wrongFilter)+'」：'+show.length+' 题 · <a href="javascript:void 0" id="clrF">清除筛选</a></p>'));
@@ -501,6 +508,110 @@ function renderWrong(app){
 }
 function refreshWrongBadge(){ /* 预留：如需在导航显示错题数 */ }
 
+/* ================= 导出今知错题包（ZIP + manifest.json） ================= */
+/* 格式依据 https://www.jinzhi.fun/correction/import ：format=jinzhi-mistake-package, schema_version=1，
+   ZIP 根目录放 manifest.json，文本中的 $...$ 由对方 MathJax 渲染 */
+function crc32(bytes){
+  var tbl=crc32.tbl;
+  if(!tbl){
+    tbl=crc32.tbl=new Uint32Array(256);
+    for(var i=0;i<256;i++){ var c=i; for(var k=0;k<8;k++) c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1); tbl[i]=c>>>0; }
+  }
+  var crc=0xFFFFFFFF;
+  for(var j=0;j<bytes.length;j++) crc=tbl[(crc^bytes[j])&0xFF]^(crc>>>8);
+  return (crc^0xFFFFFFFF)>>>0;
+}
+function makeZip(files){
+  var enc=new TextEncoder();
+  var now=new Date();
+  var dosTime=((now.getHours()<<11)|(now.getMinutes()<<5)|(now.getSeconds()>>1))&0xFFFF;
+  var dosDate=(((now.getFullYear()-1980)<<9)|((now.getMonth()+1)<<5)|now.getDate())&0xFFFF;
+  var parts=[], central=[], offset=0;
+  files.forEach(function(f){
+    var name=enc.encode(f.name), data=f.data, crc=crc32(data);
+    var lh=new Uint8Array(30+name.length), dv=new DataView(lh.buffer);
+    dv.setUint32(0,0x04034b50,true); dv.setUint16(4,20,true); dv.setUint16(6,0x0800,true);
+    dv.setUint16(8,0,true); dv.setUint16(10,dosTime,true); dv.setUint16(12,dosDate,true);
+    dv.setUint32(14,crc,true); dv.setUint32(18,data.length,true); dv.setUint32(22,data.length,true);
+    dv.setUint16(26,name.length,true); dv.setUint16(28,0,true);
+    lh.set(name,30);
+    parts.push(lh,data);
+    var ch=new Uint8Array(46+name.length), cv=new DataView(ch.buffer);
+    cv.setUint32(0,0x02014b50,true); cv.setUint16(4,20,true); cv.setUint16(6,20,true);
+    cv.setUint16(8,0x0800,true); cv.setUint16(10,0,true);
+    cv.setUint16(12,dosTime,true); cv.setUint16(14,dosDate,true);
+    cv.setUint32(16,crc,true); cv.setUint32(20,data.length,true); cv.setUint32(24,data.length,true);
+    cv.setUint16(28,name.length,true); cv.setUint16(30,0,true); cv.setUint16(32,0,true);
+    cv.setUint16(34,0,true); cv.setUint16(36,0,true); cv.setUint32(38,0,true); cv.setUint32(42,offset,true);
+    ch.set(name,46);
+    central.push(ch);
+    offset+=lh.length+data.length;
+  });
+  var csize=central.reduce(function(a,c){return a+c.length;},0);
+  var eocd=new Uint8Array(22), ev=new DataView(eocd.buffer);
+  ev.setUint32(0,0x06054b50,true); ev.setUint16(8,files.length,true); ev.setUint16(10,files.length,true);
+  ev.setUint32(12,csize,true); ev.setUint32(16,offset,true);
+  return new Blob(parts.concat(central,[eocd]),{type:"application/zip"});
+}
+function buildJinzhiManifest(list, title){
+  var now=new Date().toISOString();
+  var letters=["A","B","C","D"];
+  var folderId="gaoshu-ch1";
+  var mistakes=list.map(function(q){
+    var base={
+      id:q.id,
+      folder_id:folderId,
+      question:{text:q.stem, images:[], audio:[]},
+      user_solution:{text:"", images:[], audio:[]},
+      note:"",
+      tags:["高数", CHAPTER, TYPE_META[q.type].name],
+      knowledge_points:q.tags.slice(),
+      created_at:now
+    };
+    if(q.type==="choice" && q.options && q.options.length>=2){
+      base.kind="interactive";
+      base.standard_answer={text:"答案："+q.answer, images:[], audio:[]};
+      base.interaction={
+        type:"single",
+        options:q.options.map(function(op,i){
+          return {key:letters[i], text:op, is_correct:letters[i]===q.answer};
+        }),
+        answer:q.answer,
+        analysis:q.analysis,
+        passage:null
+      };
+    }else{
+      base.kind="legacy";
+      base.standard_answer={text:"答案："+q.answer+"\n\n解析：\n"+q.analysis, images:[], audio:[]};
+    }
+    return base;
+  });
+  return {
+    format:"jinzhi-mistake-package",
+    schema_version:1,
+    title:title,
+    created_at:now,
+    folders:[{id:folderId, name:"高数 · "+CHAPTER, parent_id:null}],
+    mistakes:mistakes,
+    media:[]
+  };
+}
+function exportJinzhiPackage(list, namePrefix){
+  if(!list.length){ toast("错题本是空的，先积累几道错题再导出"); return; }
+  var d=new Date();
+  var stamp=d.getFullYear()+String(d.getMonth()+1).padStart(2,"0")+String(d.getDate()).padStart(2,"0");
+  var title=(namePrefix||"高数错题")+" "+stamp;
+  var manifest=buildJinzhiManifest(list, title);
+  var json=new TextEncoder().encode(JSON.stringify(manifest,null,2));
+  var blob=makeZip([{name:"manifest.json",data:json}]);
+  var a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download=title+".zip";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); },1500);
+  toast("已导出 "+list.length+" 道错题（今知错题包）");
+}
+
 /* ================= 我的 ================= */
 function renderMe(app){
   var st=statOf(QUESTIONS), wl=wrongList().length;
@@ -520,12 +631,14 @@ function renderMe(app){
 
   app.appendChild(el('<h2>数据管理</h2>'));
   var dz=el('<div class="card danger-zone">'+
+    '<button class="btn primary" id="expJz">导出错题包（今知导入格式 ZIP）</button>'+
     '<button class="btn" id="expBtn">导出学习数据（JSON）</button>'+
     '<button class="btn ghost-danger" id="clrProg">清空学习进度（保留错题本）</button>'+
     '<button class="btn ghost-danger" id="clrWrong">清空错题本</button>'+
     '<button class="btn ghost-danger" id="clrAll">全部重置（进度 + 错题）</button>'+
   '</div>');
   app.appendChild(dz);
+  $("#expJz").onclick=function(){ exportJinzhiPackage(wrongList(), "高数错题包"); };
   $("#expBtn").onclick=function(){
     var data={
       app:"高数题库-第一章", exportedAt:new Date().toISOString(),
