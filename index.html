@@ -392,7 +392,7 @@ function quizView(app, ctx){
   var ansBox=null;
   function buildAns(){
     if(ansBox) return ansBox;
-    var aLabel = q.type==="choice" ? "答案：" + q.answer : "参考答案：" + q.answer;
+    var aLabel = q.type==="choice" ? "答案：" + q.answer : "参考答案：" + (q.answer || "（原卷未给出答案）");
     ansBox=el('<div class="ansbox"><h3>答案</h3><div>'+esc(aLabel)+'</div><h3>解析</h3><div>'+esc(q.analysis||"暂无解析")+'</div></div>');
     card.appendChild(ansBox);
     typeset(ansBox);
@@ -570,7 +570,7 @@ function renderWrong(app){
         if(open){
           var aLabel = q.type==="choice"
             ? "答案："+q.answer+"<br>正确选项："+esc((function(){var i=letters.indexOf(q.answer);return q.options[i]||"";})())
-            : "参考答案："+esc(q.answer);
+            : "参考答案："+esc(q.answer || "（原卷未给出答案）");
           panel=el('<div class="ansbox"><h3>答案</h3><div>'+aLabel+'</div><h3>解析</h3><div>'+esc(q.analysis||"暂无解析")+'</div><div class="btnrow"><button class="btn ghost-danger">从错题本移除</button></div></div>');
           panel.querySelector("button").onclick=function(ev){
             ev.stopPropagation();
