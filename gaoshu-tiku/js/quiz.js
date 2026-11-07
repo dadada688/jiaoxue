@@ -145,9 +145,10 @@
 
       container.innerHTML = h;
 
+      var last = idx >= ids.length - 1;
       bar.innerHTML = '<div class="fixedbar-in">' +
         '<button type="button" class="btn" id="prevBtn"' + (idx === 0 ? ' disabled' : '') + '>上一题</button>' +
-        '<button type="button" class="btn primary" id="nextBtn"' + (idx >= ids.length - 1 ? ' disabled' : '') + '>下一题</button>' +
+        '<button type="button" class="btn primary" id="nextBtn">' + (last ? '已是最后一题' : '下一题') + '</button>' +
         '</div>';
 
       bind(item, locked);
@@ -228,9 +229,13 @@
       window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
     }
 
-    document.getElementById('quiz').addEventListener('click', function (e) {
-      if (e.target.closest('#prevBtn')) go(idx - 1);
-      if (e.target.closest('#nextBtn')) go(idx + 1);
+    // 底栏按钮不在 #quiz 内，事件必须绑在 #bar 上（此前绑到 #quiz 导致「下一题」无响应）
+    bar.addEventListener('click', function (e) {
+      if (e.target.closest('#prevBtn')) { go(idx - 1); return; }
+      if (e.target.closest('#nextBtn')) {
+        if (idx >= ids.length - 1) GK.toast('已是最后一题');
+        else go(idx + 1);
+      }
     });
     document.addEventListener('keydown', function (e) {
       if (e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
