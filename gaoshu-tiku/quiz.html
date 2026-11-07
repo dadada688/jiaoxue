@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>答题 · 高数题库</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="vendor/katex/katex.min.css">
+</head>
+<body>
+<header class="topbar"><div class="topbar-in">
+  <a class="brand" href="index.html">高数题库<small>极限 · 导数</small></a>
+  <nav class="nav">
+    <a href="index.html" data-nav>题库</a>
+    <a href="practice.html" data-nav>随机练习</a>
+    <a href="wrong.html" data-nav>错题本</a>
+    <a href="profile.html" data-nav>个人中心</a>
+  </nav>
+</div></header>
+<main class="wrap page" id="quiz"></main>
+<div class="fixedbar" id="bar"></div>
+<script src="vendor/katex/katex.min.js"></script>
+<script src="js/questions.js"></script>
+<script src="js/core.js"></script>
+<script src="js/quiz.js"></script>
+<script>
+(function () {
+  var ch = GK.qs('ch');
+  var type = GK.qs('type');
+  var group = GK.qs('group');
+  var id = GK.qs('id');
+  var list = GK.questions();
+  if (ch === 'A' || ch === 'B') list = GK.chapterQuestions(ch);
+  if (id && GK.byId(id) && !list.some(function (q) { return q.id === id; })) {
+    // 从标签页/错题本跳入时，按题目所属章节建立列表
+    list = GK.chapterQuestions(GK.byId(id).ch);
+  }
+  var start = id && GK.byId(id) ? id : (GK.firstUndone({ ch: ch || null, type: type || null, group: group ? Number(group) : 0 }) || {}).id;
+  GKQuiz.mount({ ids: list.map(function (q) { return q.id; }), startId: start, mode: 'formal' });
+})();
+</script>
+</body>
+</html>
