@@ -15,22 +15,33 @@
     '-2': '下加一线', '-1': '下加一间',
     '0': '第 1 线', '1': '第 1 间', '2': '第 2 线', '3': '第 2 间',
     '4': '第 3 线', '5': '第 3 间', '6': '第 4 线', '7': '第 4 间',
-    '8': '第 5 线', '9': '第 5 线上方'
+    '8': '第 5 线', '9': '第 5 线上方', '10': '上加一线', '11': '上加一间'
+  };
+  var CLEF_BASE = {
+    treble: { index: 2, octave: 4 }, // 第 1 线 E4
+    bass: { index: 4, octave: 2 }    // 第 1 线 G2
   };
 
-  // step: 以「第 1 线 = E4」为 0，每上升一格 +1
-  function info(step) {
-    var idx = ((step + 2) % 7 + 7) % 7;
-    var oct = 4 + Math.floor((step + 2) / 7);
+  // 每种谱表都以第 1 线为 step = 0，每上升一线 / 间加 1
+  function info(step, clef, acc) {
+    clef = clef || 'treble';
+    acc = acc === undefined ? 0 : Number(acc);
+    var base = CLEF_BASE[clef] || CLEF_BASE.treble;
+    var absolute = base.octave * 7 + base.index + step;
+    var idx = ((absolute % 7) + 7) % 7;
+    var oct = Math.floor(absolute / 7);
     var letter = LETTERS[idx];
+    var accidental = acc === 1 ? '♯' : acc === -1 ? '♭' : '';
     return {
       step: step,
+      clef: clef,
+      acc: acc,
       letter: letter,
       oct: oct,
-      name: letter + oct,
+      name: letter + accidental + oct,
       sol: SOLFEGE[idx],
-      jp: JIANPU[idx],
-      midi: 12 * (oct + 1) + SEMITONE[letter],
+      jp: accidental + JIANPU[idx],
+      midi: 12 * (oct + 1) + SEMITONE[letter] + acc,
       pos: POSITION[String(step)] || ''
     };
   }
@@ -58,6 +69,7 @@
     var f0 = 440 * Math.pow(2, (midi - 69) / 12);
 
     var bus = c.createGain();
+    var oscillators = [];
     var lp = c.createBiquadFilter();
     lp.type = 'lowpass';
     lp.Q.value = 0.4;
@@ -75,6 +87,7 @@
       g.gain.value = p[1];
       o.connect(g);
       g.connect(lp);
+      oscillators.push(o);
       o.start(t);
       o.stop(t + dur + 0.9);
     });
@@ -83,10 +96,21 @@
     bus.gain.linearRampToValueAtTime(0.85, t + 0.008);
     bus.gain.exponentialRampToValueAtTime(0.30, t + 0.16);
     bus.gain.exponentialRampToValueAtTime(0.001, t + Math.max(0.45, dur) + 0.55);
+
+    return {
+      stop: function () {
+        var now = c.currentTime;
+        bus.gain.cancelScheduledValues(now);
+        bus.gain.setTargetAtTime(0.0001, now, 0.015);
+        oscillators.forEach(function (o) {
+          try { o.stop(now + 0.06); } catch (err) {}
+        });
+      }
+    };
   }
 
-  function playStep(step, dur) {
-    playMidi(info(step).midi, dur);
+  function playStep(step, dur, clef, acc) {
+    playMidi(info(step, clef, acc).midi, dur);
   }
 
   /* ---------------------------------------------------------
@@ -109,37 +133,92 @@
     return s;
   }
 
-  function clefMarkup(x) {
+  function clefMarkup(x, clef) {
     var cx = (x === undefined) ? 28 : x;
-    return '<text class="clef-glyph" x="' + cx + '" y="132" font-size="100" fill="#8a6a34">\uD834\uDD1E</text>';
+    var bass = clef === 'bass';
+    return '<text class="clef-glyph" x="' + cx + '" y="132" font-size="' + (bass ? 92 : 100) + '" fill="#8a6a34">' +
+      (bass ? '𝄢' : '𝄞') + '</text>';
+  }
+
+  function accidentalMarkup(x, y, acc) {
+    var glyph = acc === 1 ? '♯' : acc === -1 ? '♭' : '♮';
+    return '<text class="accidental-glyph" x="' + x + '" y="' + (y + 8) + '" font-size="27" text-anchor="middle">' + glyph + '</text>';
+  }
+
+  function keySignatureMarkup(x, clef, key) {
+    if (key !== '1s') return '';
+    var step = clef === 'bass' ? 6 : 8;
+    return accidentalMarkup(x, yOf(step), 1);
+  }
+
+  function timeSignatureMarkup(x) {
+    return '<g class="time-signature" text-anchor="middle">' +
+      '<text x="' + x + '" y="85">4</text><text x="' + x + '" y="121">4</text></g>';
+  }
+
+  function ledgerLines(step, x) {
+    var out = '';
+    var s;
+    if (step <= -2) {
+      for (s = -2; s >= step; s -= 2) {
+        out += '<line class="staff-ledger" x1="' + (x - 15) + '" y1="' + yOf(s) + '" x2="' + (x + 15) + '" y2="' + yOf(s) + '"/>';
+      }
+    } else if (step >= 10) {
+      for (s = 10; s <= step; s += 2) {
+        out += '<line class="staff-ledger" x1="' + (x - 15) + '" y1="' + yOf(s) + '" x2="' + (x + 15) + '" y2="' + yOf(s) + '"/>';
+      }
+    }
+    return out;
+  }
+
+  function restGlyph(dur, x, opt) {
+    opt = opt || {};
+    var glyph = dur === 0.5 ? '𝄾' : dur === 4 ? '𝄻' : dur === 2 ? '𝄼' : '𝄽';
+    return '<g class="svg-rest" data-dur="' + dur + '"' +
+      (opt.idx !== undefined ? ' data-idx="' + opt.idx + '"' : '') +
+      (opt.staffIdx !== undefined ? ' data-staff-idx="' + opt.staffIdx + '"' : '') + '>' +
+      '<text class="rest-glyph" x="' + x + '" y="116" text-anchor="middle">' + glyph + '</text></g>';
   }
 
   /**
-   * 画一个音符
-   * opt: { hollow, mag, idx, labelY, showLabel, interactive }
+   * 画一个音符；dur 以四分音符为 1，支持 0.5 / 1 / 1.5 / 2 / 3 / 4。
    */
   function noteGlyph(step, x, opt) {
     opt = opt || {};
-    var it = info(step);
+    var clef = opt.clef || 'treble';
+    var acc = opt.acc === undefined ? 0 : Number(opt.acc);
+    var it = info(step, clef, acc);
     var y = yOf(step);
+    var dur = opt.dur || (opt.hollow ? 2 : 1);
     var stemUp = step < 4;
     var stemX = stemUp ? x + 7.4 : x - 7.4;
     var stemY2 = stemUp ? y - 42 : y + 42;
-    var hollow = !!opt.hollow;
+    var hollow = opt.hollow !== undefined ? !!opt.hollow : dur >= 2;
     var out = '';
 
-    out += '<g class="svg-note" data-step="' + step + '"' +
+    out += '<g class="svg-note" data-step="' + step + '" data-clef="' + clef + '" data-acc="' + acc + '"' +
       (opt.idx !== undefined ? ' data-idx="' + opt.idx + '"' : '') +
+      (opt.staffIdx !== undefined ? ' data-staff-idx="' + opt.staffIdx + '"' : '') +
       ' tabindex="0" role="button" aria-label="' + it.name + '，' + it.pos + '">';
     out += '<circle class="hit" cx="' + x + '" cy="' + y + '" r="19"/>';
+    out += ledgerLines(step, x);
 
-    if (step <= -2) {
-      out += '<line class="staff-ledger" x1="' + (x - 15) + '" y1="' + y + '" x2="' + (x + 15) + '" y2="' + y + '"/>';
-    }
-
+    if (opt.printAcc) out += accidentalMarkup(x - 22, y, acc);
     out += '<ellipse class="note-head' + (hollow ? ' is-hollow' : '') + '" cx="' + x + '" cy="' + y +
       '" rx="8.2" ry="6" transform="rotate(-18 ' + x + ' ' + y + ')"/>';
-    out += '<line class="note-stem" x1="' + stemX + '" y1="' + y + '" x2="' + stemX + '" y2="' + stemY2 + '"/>';
+
+    if (dur !== 4) {
+      out += '<line class="note-stem" x1="' + stemX + '" y1="' + y + '" x2="' + stemX + '" y2="' + stemY2 + '"/>';
+      if (dur <= 0.75) {
+        out += '<path class="note-flag" d="M' + stemX + ' ' + stemY2 +
+          (stemUp
+            ? ' C' + (stemX + 13) + ' ' + (stemY2 + 9) + ' ' + (stemX + 13) + ' ' + (stemY2 + 24) + ' ' + (stemX + 1) + ' ' + (stemY2 + 31)
+            : ' C' + (stemX - 13) + ' ' + (stemY2 - 9) + ' ' + (stemX - 13) + ' ' + (stemY2 - 24) + ' ' + (stemX - 1) + ' ' + (stemY2 - 31)) + '"/>';
+      }
+    }
+    if (dur === 1.5 || dur === 3 || dur === 0.75) {
+      out += '<circle class="note-dot" cx="' + (x + 14) + '" cy="' + y + '" r="2.2"/>';
+    }
 
     if (opt.showLabel !== false) {
       var ly = opt.labelY || 206;
@@ -238,59 +317,159 @@
     host.innerHTML = svgWrap(650, 235, body, 'show-names', 'C4 到 G4 五个音在五线谱上的位置');
   }
 
-  /* 4.5 全谱表 C4 - G5 */
-  function renderLadder() {
-    var host = document.getElementById('ladder');
-    if (!host) return;
+  /* 4.5 音位阶梯：高音与低音共用绘制逻辑 */
+  function ladderSVG(clef, steps, label) {
     var W = 780, H = 268;
-    var body = staffLines(60, 742) + clefMarkup(64);
-    var steps = [-2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-    var startX = 140, gap = 51;
+    var body = staffLines(60, 742) + clefMarkup(64, clef);
+    var startX = 140, gap = steps.length === 11 ? 54 : 51;
 
     for (var i = 0; i < steps.length; i++) {
       var step = steps[i];
-      var it = info(step);
+      var it = info(step, clef);
       var x = startX + i * gap;
       var y = yOf(step);
-      if (step <= -2) {
-        body += '<line class="staff-ledger" x1="' + (x - 15) + '" y1="' + y + '" x2="' + (x + 15) + '" y2="' + y + '"/>';
-      }
-      body += '<g class="svg-note" data-step="' + step + '" tabindex="0" role="button" aria-label="' + it.name + '，' + it.pos + '">' +
-        '<circle class="hit" cx="' + x + '" cy="' + y + '" r="18"/>' +
-        '<ellipse class="note-head" cx="' + x + '" cy="' + y + '" rx="8" ry="5.9" transform="rotate(-18 ' + x + ' ' + y + ')"/>' +
-        '<line class="note-stem" x1="' + (step < 4 ? x + 7.2 : x - 7.2) + '" y1="' + y + '" x2="' + (step < 4 ? x + 7.2 : x - 7.2) + '" y2="' + (step < 4 ? y - 40 : y + 40) + '"/>' +
-        '</g>';
+      body += noteGlyph(step, x, { clef: clef, showLabel: false });
       body += '<line class="ladder-dot" x1="' + x + '" y1="' + (y + 10) + '" x2="' + x + '" y2="196"/>';
       body += '<text class="ladder-label" x="' + x + '" y="214">' + it.name + '</text>';
       body += '<text class="ladder-jp" x="' + x + '" y="231">' + it.jp + ' · ' + it.sol + '</text>';
     }
-    host.innerHTML = svgWrap(W, H, body, '', '高音谱表上 C4 到 G5 的十二个音位');
+    return svgWrap(W, H, body, '', label);
+  }
+
+  function renderLadder() {
+    var host = document.getElementById('ladder');
+    if (host) host.innerHTML = ladderSVG('treble', [-2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9], '高音谱表上 C4 到 G5 的十二个音位');
+  }
+
+  function renderBassClefDemo() {
+    var host = document.getElementById('bassClefDemo');
+    if (!host) return;
+    var body = staffLines(26, 420) + clefMarkup(28, 'bass') + noteGlyph(6, 250, { clef: 'bass', labelY: 200, showLabel: true });
+    host.innerHTML = svgWrap(440, 225, body, 'show-names', '低音谱号的两个点夹着第四线，也就是 F3');
+  }
+
+  function renderBassLadder() {
+    var host = document.getElementById('bassLadder');
+    if (host) host.innerHTML = ladderSVG('bass', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], '低音谱表上 G2 到中央 C 的十一个音位');
+  }
+
+  function renderGrandStaffDemo() {
+    var host = document.getElementById('grandStaffDemo');
+    if (!host) return;
+    var body = '<path class="grand-brace" d="M30 45 C15 45 15 65 15 85 L15 135 C15 155 5 160 5 165 C5 170 15 175 15 195 L15 245 C15 265 15 285 30 285"/>';
+    body += '<text class="staff-name" x="85" y="30">右手 · 高音谱表</text>';
+    body += staffLines(85, 690) + clefMarkup(58, 'treble');
+    body += noteGlyph(2, 280, { dur: 4, labelY: 160, showLabel: true });
+    body += noteGlyph(5, 470, { dur: 4, labelY: 160, showLabel: true });
+    body += '<g transform="translate(0 150)">';
+    body += '<text class="staff-name" x="85" y="30">左手 · 低音谱表</text>';
+    body += staffLines(85, 690) + clefMarkup(58, 'bass');
+    body += noteGlyph(6, 280, { clef: 'bass', dur: 4, labelY: 160, showLabel: true });
+    body += noteGlyph(10, 470, { clef: 'bass', dur: 4, labelY: 160, showLabel: true });
+    body += '</g>';
+    host.innerHTML = svgWrap(720, 350, body, 'show-names', '钢琴大谱表，上方高音谱表下方低音谱表');
   }
 
   /* 4.6 一小节 4 拍 */
   function renderTimeDemo() {
     var host = document.getElementById('timeDemo');
     if (!host) return;
-    var W = 470, H = 220;
-    var body = staffLines(26, 440) + clefMarkup();
+    var body = staffLines(26, 440) + clefMarkup() + timeSignatureMarkup(100);
     var steps = [-2, -1, 0, 1];
     for (var i = 0; i < steps.length; i++) {
-      body += noteGlyph(steps[i], 180 + i * 65, { labelY: 200, showLabel: true });
+      body += noteGlyph(steps[i], 180 + i * 65, { dur: 1, labelY: 200, showLabel: true });
     }
     body += '<line class="staff-bar" x1="415" y1="60" x2="415" y2="132"/>';
     body += '<line class="staff-bar" x1="420" y1="60" x2="420" y2="132" stroke-width="3"/>';
-    host.innerHTML = svgWrap(W, 228, body, 'show-names', '一小节四个四分音符');
+    host.innerHTML = svgWrap(470, 228, body, 'show-names', '一小节四个四分音符');
+  }
+
+  function renderEighthDemo() {
+    var host = document.getElementById('eighthDemo');
+    if (!host) return;
+    var body = staffLines(26, 590) + clefMarkup() + timeSignatureMarkup(100);
+    var counts = ['1', '和', '2', '和', '3', '和', '4', '和'];
+    for (var i = 0; i < 8; i++) {
+      var x = 150 + i * 52;
+      body += noteGlyph(0, x, { dur: 0.5, showLabel: false });
+      body += '<text class="beat-label" x="' + x + '" y="184" text-anchor="middle">' + counts[i] + '</text>';
+    }
+    body += '<line class="staff-bar" x1="570" y1="60" x2="570" y2="132"/>';
+    host.innerHTML = svgWrap(610, 210, body, '', '八个八分音符，两个一组共四拍');
+  }
+
+  function renderRhythmDemo() {
+    var host = document.getElementById('rhythmDemo');
+    if (!host) return;
+    var notes = [
+      { step: -2, dur: 1 }, { step: -1, dur: 0.5 }, { step: 0, dur: 0.5 }, { rest: true, dur: 1 }, { step: 2, dur: 1 },
+      { step: 1, dur: 1.5 }, { step: 0, dur: 0.5 }, { step: -1, dur: 1 }, { rest: true, dur: 1 }
+    ];
+    var counts = ['1', '2', '2 和', '3', '4', '1', '2 和', '3', '4'];
+    var left = 150, unit = 62, W = left + 8 * unit + 55;
+    var body = staffLines(26, W - 20) + clefMarkup() + timeSignatureMarkup(105);
+    var t = 0;
+    notes.forEach(function (n, i) {
+      var x = left + (t + Math.min(n.dur, 1) / 2) * unit;
+      body += n.rest ? restGlyph(n.dur, x) : noteGlyph(n.step, x, { dur: n.dur, showLabel: false });
+      body += '<text class="beat-label" x="' + x + '" y="184" text-anchor="middle">' + counts[i] + '</text>';
+      t += n.dur;
+      if (t === 4) body += '<line class="staff-bar" x1="' + (left + 4 * unit) + '" y1="60" x2="' + (left + 4 * unit) + '" y2="132"/>';
+    });
+    body += '<line class="staff-bar" x1="' + (left + 8 * unit) + '" y1="60" x2="' + (left + 8 * unit) + '" y2="132"/>';
+    host.innerHTML = svgWrap(W, 210, body, '', '两小节节奏，包含八分音符附点和休止符');
+  }
+
+  function renderAccidentalDemo() {
+    var host = document.getElementById('accidentalDemo');
+    if (!host) return;
+    var notes = [
+      { step: 1, dur: 1, acc: 1, printAcc: true },
+      { step: 1, dur: 1, acc: 1 },
+      { step: 1, dur: 1, acc: 0, printAcc: true },
+      { step: 0, dur: 1 },
+      { step: 1, dur: 4 }
+    ];
+    var left = 145, unit = 70, W = left + 8 * unit + 50;
+    var body = staffLines(26, W - 20) + clefMarkup() + timeSignatureMarkup(108);
+    var t = 0;
+    notes.forEach(function (n) {
+      var x = left + (t + n.dur / 2) * unit;
+      body += noteGlyph(n.step, x, { dur: n.dur, acc: n.acc, printAcc: n.printAcc, labelY: 200, showLabel: true });
+      t += n.dur;
+      if (t === 4) body += '<line class="staff-bar" x1="' + (left + 4 * unit) + '" y1="60" x2="' + (left + 4 * unit) + '" y2="132"/>';
+    });
+    body += '<line class="staff-bar" x1="' + (left + 8 * unit) + '" y1="60" x2="' + (left + 8 * unit) + '" y2="132"/>';
+    host.innerHTML = svgWrap(W, 225, body, 'show-names', '临时升降与还原号在两个小节中的作用');
+  }
+
+  function renderKeySignatureDemo() {
+    var host = document.getElementById('keySignatureDemo');
+    if (!host) return;
+    var left = 155, unit = 65, W = left + 8 * unit + 50;
+    var body = staffLines(26, W - 20) + clefMarkup() + keySignatureMarkup(102, 'treble', '1s') + timeSignatureMarkup(130);
+    body += noteGlyph(1, left + 2 * unit, { dur: 4, acc: 1, labelY: 200, showLabel: true });
+    body += '<line class="staff-bar" x1="' + (left + 4 * unit) + '" y1="60" x2="' + (left + 4 * unit) + '" y2="132"/>';
+    body += noteGlyph(8, left + 6 * unit, { dur: 4, acc: 1, labelY: 200, showLabel: true });
+    body += '<line class="staff-bar" x1="' + (left + 8 * unit) + '" y1="60" x2="' + (left + 8 * unit) + '" y2="132"/>';
+    host.innerHTML = svgWrap(W, 225, body, 'show-names', '一升号调号让不同八度的 F 都升高半音');
   }
 
   /* ---------------------------------------------------------
      5. 认音小测
      --------------------------------------------------------- */
-  var QUIZ_RANGES = { base: [-2, 2], mid: [-2, 5], hard: [-2, 9] };
+  var QUIZ_RANGES = {
+    base: { clef: 'treble', min: -2, max: 2 },
+    mid: { clef: 'treble', min: -2, max: 5 },
+    hard: { clef: 'treble', min: -2, max: 9 },
+    bass: { clef: 'bass', min: 0, max: 10 }
+  };
   var TOTAL_QUESTIONS = 10;
 
   var quiz = {
     level: 'base',
     format: 'name',
+    clef: 'treble',
     step: null,
     lastStep: null,
     answered: false,
@@ -308,8 +487,8 @@
   var quizLevels = document.getElementById('quizLevels');
   var quizRestart = document.getElementById('quizRestart');
 
-  function quizStaffSVG(step) {
-    var body = staffLines(30, 400) + clefMarkup() + noteGlyph(step, 250, { showLabel: false });
+  function quizStaffSVG(step, clef) {
+    var body = staffLines(30, 400) + clefMarkup(28, clef) + noteGlyph(step, 250, { clef: clef, showLabel: false });
     return '<svg viewBox="0 0 430 215" role="img" aria-label="谱面上的一个待识别音符">' + body + '</svg>';
   }
 
@@ -331,18 +510,19 @@
     if (!quizStage) return;
     if (quiz.done >= TOTAL_QUESTIONS) {
       quiz.finished = true;
-      quizStage.innerHTML = quizStaffSVG(-2);
+      quizStage.innerHTML = quizStaffSVG(quiz.clef === 'bass' ? 10 : -2, quiz.clef);
       quizQ.textContent = '本轮结束';
       quizOptions.innerHTML = '';
       quizFb.className = 'quiz-fb';
       quizFb.innerHTML = '10 题答对 <b>' + quiz.correct + '</b> 题。' +
-        (quiz.correct >= 9 ? '非常好，可以换更高的难度了。' : quiz.correct >= 7 ? '不错，再刷一轮会更快。' : '别急，回第 3 课把锚点再看一遍。');
+        (quiz.correct >= 9 ? '非常好，可以换另一个难度了。' : quiz.correct >= 7 ? '不错，再刷一轮会更快。' : '别急，回第 ' + (quiz.clef === 'bass' ? '4' : '3') + ' 课把锚点再看一遍。');
       return;
     }
 
     var range = QUIZ_RANGES[quiz.level];
+    quiz.clef = range.clef;
     var pool = [];
-    for (var s = range[0]; s <= range[1]; s++) pool.push(s);
+    for (var s = range.min; s <= range.max; s++) pool.push(s);
 
     var step;
     do {
@@ -353,12 +533,12 @@
     quiz.lastStep = step;
     quiz.answered = false;
 
-    quizStage.innerHTML = quizStaffSVG(step);
+    quizStage.innerHTML = quizStaffSVG(step, quiz.clef);
     quizQ.textContent = quiz.format === 'jp' ? '这个音符的简谱是几？' : '这个音符是哪个音？';
 
     if (quiz.format === 'jp') {
       var digits = ['1', '2', '3', '4', '5', '6', '7'];
-      var correctJp = info(step).jp;
+      var correctJp = info(step, quiz.clef).jp;
       var picks = shuffle(digits.filter(function (d) { return d !== correctJp; })).slice(0, 3);
       picks.push(correctJp);
       quizOptions.innerHTML = shuffle(picks).map(function (d) {
@@ -370,7 +550,7 @@
       options.push(step);
       options = shuffle(options);
       quizOptions.innerHTML = options.map(function (v) {
-        var it = info(v);
+        var it = info(v, quiz.clef);
         return '<button type="button" class="quiz-opt" data-step="' + v + '">' + it.name +
           '<small>' + it.sol + ' · ' + it.jp + '</small></button>';
       }).join('');
@@ -385,7 +565,7 @@
     quiz.answered = true;
     quiz.done++;
 
-    var it = info(quiz.step);
+    var it = info(quiz.step, quiz.clef);
     var isJp = quiz.format === 'jp';
     var ok = isJp ? (btn.dataset.jp === it.jp) : (Number(btn.dataset.step) === quiz.step);
     var rightBtn = isJp
@@ -463,48 +643,113 @@
   var MELODIES = {
     twinkle: {
       bpm: 100,
-      notes: [[-2, 1], [-2, 1], [2, 1], [2, 1], [3, 1], [3, 1], [2, 2], [1, 1], [1, 1], [0, 1], [0, 1], [-1, 1], [-1, 1], [-2, 2]]
+      staves: [{
+        clef: 'treble', key: null,
+        notes: [
+          { step: -2, dur: 1 }, { step: -2, dur: 1 }, { step: 2, dur: 1 }, { step: 2, dur: 1 },
+          { step: 3, dur: 1 }, { step: 3, dur: 1 }, { step: 2, dur: 2 },
+          { step: 1, dur: 1 }, { step: 1, dur: 1 }, { step: 0, dur: 1 }, { step: 0, dur: 1 },
+          { step: -1, dur: 1 }, { step: -1, dur: 1 }, { step: -2, dur: 2 }
+        ]
+      }]
     },
-    ode: {
-      bpm: 96,
-      notes: [[0, 1], [0, 1], [1, 1], [2, 1], [2, 1], [1, 1], [0, 1], [-1, 1], [-2, 1], [-2, 1], [-1, 1], [0, 1], [0, 1], [-1, 1], [-1, 2]]
+    bassSteps: {
+      bpm: 88,
+      staves: [{
+        clef: 'bass', key: null,
+        notes: [
+          { step: 0, dur: 1 }, { step: 2, dur: 1 }, { step: 4, dur: 1 }, { step: 6, dur: 1 },
+          { step: 6, dur: 1, acc: 1, printAcc: true }, { step: 6, dur: 1, acc: 1 }, { step: 6, dur: 2, acc: 0, printAcc: true },
+          { step: 6, dur: 1 }, { step: 4, dur: 1 }, { step: 2, dur: 2 },
+          { step: 0, dur: 4 }
+        ]
+      }]
     },
-    mary: {
-      bpm: 100,
-      notes: [[0, 1], [-1, 1], [-2, 1], [-1, 1], [0, 1], [0, 1], [0, 2], [-1, 1], [-1, 1], [-1, 2], [0, 1], [2, 1], [2, 2]]
+    grand: {
+      bpm: 92,
+      staves: [
+        {
+          clef: 'treble', key: '1s',
+          notes: [
+            { step: 2, dur: 1 }, { step: 2, dur: 1 }, { step: 3, dur: 1 }, { step: 3, dur: 1 },
+            { step: 4, dur: 1 }, { step: 4, dur: 1 }, { step: 3, dur: 1 }, { step: 3, dur: 1 },
+            { step: 2, dur: 1 }, { step: 3, dur: 1 }, { step: 4, dur: 1 }, { step: 1, dur: 1 },
+            { step: 2, dur: 2 }, { step: 1, dur: 1 }, { step: 2, dur: 1 }
+          ]
+        },
+        {
+          clef: 'bass', key: '1s',
+          notes: [{ step: 0, dur: 4 }, { step: 4, dur: 4 }, { step: 0, dur: 4 }, { step: 3, dur: 4 }]
+        }
+      ]
     }
   };
 
+  function effectiveAcc(n, stave) {
+    if (n.acc !== undefined) return Number(n.acc);
+    if (stave.key === '1s' && info(n.step, stave.clef).letter === 'F') return 1;
+    return 0;
+  }
+
+  function staffBeats(stave) {
+    return stave.notes.reduce(function (sum, n) { return sum + n.dur; }, 0);
+  }
+
   function melodySVG(melody) {
-    var unit = 36, left = 100, right = 56;
-    var total = melody.notes.reduce(function (a, n) { return a + n[1]; }, 0);
+    var unit = 44, left = 155, right = 60;
+    var total = Math.max.apply(null, melody.staves.map(staffBeats));
     var W = left + total * unit + right;
-    var H = 258;
-    var body = staffLines(26, W - 20) + clefMarkup();
+    var grand = melody.staves.length > 1;
+    var offset = 180;
+    var H = grand ? 390 : 258;
+    var body = '';
 
-    for (var b = 4; b < total; b += 4) {
-      var bx = left + b * unit;
-      body += '<line class="staff-bar" x1="' + bx + '" y1="60" x2="' + bx + '" y2="132"/>';
+    if (grand) {
+      body += '<path class="grand-brace" d="M30 45 C15 45 15 65 15 90 L15 145 C15 165 5 172 5 178 C5 184 15 191 15 211 L15 265 C15 290 15 315 30 315"/>';
+      body += '<text class="staff-name" x="28" y="30">右手</text><text class="staff-name" x="28" y="210">左手</text>';
     }
-    var endX = left + total * unit;
-    body += '<line class="staff-bar" x1="' + endX + '" y1="60" x2="' + endX + '" y2="132"/>';
-    body += '<line class="staff-bar" x1="' + (endX + 4) + '" y1="60" x2="' + (endX + 4) + '" y2="132" stroke-width="3"/>';
 
-    var t = 0;
-    melody.notes.forEach(function (n, i) {
-      body += noteGlyph(n[0], left + t * unit + 15, { hollow: n[1] >= 2, idx: i, labelY: 212 });
-      t += n[1];
+    melody.staves.forEach(function (stave, staffIdx) {
+      var t = 0;
+      var group = staffLines(26, W - 20) + clefMarkup(28, stave.clef) +
+        keySignatureMarkup(100, stave.clef, stave.key) + timeSignatureMarkup(stave.key ? 128 : 108);
+
+      for (var b = 4; b < total; b += 4) {
+        var bx = left + b * unit;
+        group += '<line class="staff-bar" x1="' + bx + '" y1="60" x2="' + bx + '" y2="132"/>';
+      }
+      var endX = left + total * unit;
+      group += '<line class="staff-bar" x1="' + endX + '" y1="60" x2="' + endX + '" y2="132"/>';
+      group += '<line class="staff-bar" x1="' + (endX + 4) + '" y1="60" x2="' + (endX + 4) + '" y2="132" stroke-width="3"/>';
+
+      stave.notes.forEach(function (n, i) {
+        var x = left + (t + n.dur / 2) * unit;
+        var opts = { dur: n.dur, idx: i, staffIdx: staffIdx, labelY: grand ? 158 : 212, showLabel: true };
+        if (n.rest) {
+          group += restGlyph(n.dur, x, opts);
+        } else {
+          opts.clef = stave.clef;
+          opts.acc = effectiveAcc(n, stave);
+          opts.printAcc = n.printAcc;
+          group += noteGlyph(n.step, x, opts);
+        }
+        t += n.dur;
+      });
+      body += grand ? '<g transform="translate(0 ' + (staffIdx * offset) + ')">' + group + '</g>' : group;
     });
 
-    return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="练习谱例">' + body + '</svg>';
+    return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + (grand ? '大谱表综合视读练习' : '单谱表视读练习') + '">' + body + '</svg>';
   }
 
   var playTimers = [];
+  var playVoices = [];
 
   function stopPlayback() {
     playTimers.forEach(function (t) { clearTimeout(t); });
     playTimers = [];
-    Array.prototype.forEach.call(document.querySelectorAll('.svg-note.is-playing'), function (n) {
+    playVoices.forEach(function (v) { if (v && v.stop) v.stop(); });
+    playVoices = [];
+    Array.prototype.forEach.call(document.querySelectorAll('.is-playing'), function (n) {
       n.classList.remove('is-playing');
     });
   }
@@ -513,30 +758,41 @@
     var melody = MELODIES[ex.dataset.melody];
     if (!melody) return;
     stopPlayback();
+    var c = audio();
+    if (!c) return;
     var svg = ex.querySelector('svg');
     var beat = 60 / melody.bpm;
-    var t = 0;
-    var start = (audio() ? actx.currentTime : 0) + 0.12;
+    var start = c.currentTime + 0.12;
+    var total = Math.max.apply(null, melody.staves.map(staffBeats));
+    ex.classList.add('is-playing');
 
-    melody.notes.forEach(function (n, i) {
-      var when = start + t * beat;
-      playMidi(info(n[0]).midi, n[1] * beat * 0.95, when);
-      var delay = (when - actx.currentTime) * 1000;
-      playTimers.push(setTimeout(function () {
-        Array.prototype.forEach.call(svg.querySelectorAll('.is-playing'), function (el) {
-          el.classList.remove('is-playing');
-        });
-        var g = svg.querySelector('[data-idx="' + i + '"]');
-        if (g) g.classList.add('is-playing');
-      }, Math.max(0, delay)));
-      t += n[1];
+    melody.staves.forEach(function (stave, staffIdx) {
+      var t = 0;
+      stave.notes.forEach(function (n, i) {
+        var when = start + t * beat;
+        var delay = Math.max(0, (when - c.currentTime) * 1000);
+        var g = svg.querySelector('[data-staff-idx="' + staffIdx + '"][data-idx="' + i + '"]');
+        if (!n.rest) {
+          var voice = playMidi(info(n.step, stave.clef, effectiveAcc(n, stave)).midi, n.dur * beat * 0.95, when);
+          playVoices.push(voice);
+        }
+        playTimers.push(setTimeout(function () {
+          if (g) g.classList.add('is-playing');
+        }, delay));
+        playTimers.push(setTimeout(function () {
+          if (g) g.classList.remove('is-playing');
+        }, delay + n.dur * beat * 1000));
+        t += n.dur;
+      });
     });
 
     playTimers.push(setTimeout(function () {
       Array.prototype.forEach.call(svg.querySelectorAll('.is-playing'), function (el) {
         el.classList.remove('is-playing');
       });
-    }, (t * beat + 0.5) * 1000));
+      ex.classList.remove('is-playing');
+      playVoices = [];
+    }, (total * beat + 0.5) * 1000));
   }
 
   function initExercises() {
@@ -573,7 +829,7 @@
     if (!g) return;
     if (g.closest('.quiz-stage')) return;
     var step = Number(g.dataset.step);
-    playStep(step, 0.9);
+    playStep(step, 0.9, g.dataset.clef, Number(g.dataset.acc || 0));
     g.classList.add('is-on');
     setTimeout(function () { g.classList.remove('is-on'); }, 1600);
   });
@@ -584,7 +840,7 @@
     if (!g || !g.classList || !g.classList.contains('svg-note')) return;
     if (g.closest('.quiz-stage')) return;
     e.preventDefault();
-    playStep(Number(g.dataset.step), 0.9);
+    playStep(Number(g.dataset.step), 0.9, g.dataset.clef, Number(g.dataset.acc || 0));
     g.classList.add('is-on');
     setTimeout(function () { g.classList.remove('is-on'); }, 1600);
   });
@@ -604,31 +860,45 @@
     }
   };
 
+  var OLD_COURSE_MAP = {
+    '1': 'lines', '2': 'treble', '3': 'treble-notes', '4': 'rhythm',
+    '5': 'quiz', '6': 'sight', '7': 'review'
+  };
+  var courseIds = Array.prototype.map.call(document.querySelectorAll('.toc a[data-course]'), function (a) {
+    return a.dataset.course;
+  });
   var doneList = store.get('done', []);
   var doneSet = {};
-  doneList.forEach(function (n) { doneSet[String(n)] = true; });
+  doneList.forEach(function (n) {
+    var old = String(n);
+    var id = OLD_COURSE_MAP[old] || old;
+    if (courseIds.indexOf(id) !== -1) doneSet[id] = true;
+  });
 
   function renderDone() {
     var count = 0;
-    Object.keys(doneSet).forEach(function (k) { if (doneSet[k]) count++; });
+    courseIds.forEach(function (id) { if (doneSet[id]) count++; });
 
     Array.prototype.forEach.call(document.querySelectorAll('.done-btn'), function (b) {
       var on = !!doneSet[b.dataset.done];
+      var lesson = b.closest('.lesson');
+      var number = lesson ? lesson.dataset.lesson : '';
       b.classList.toggle('is-done', on);
-      b.textContent = on ? '已完成 · 点击取消' : '标记第 ' + b.dataset.done + ' 课已完成';
+      b.textContent = on ? '已完成 · 点击取消' : '标记第 ' + number + ' 课已完成';
     });
 
     Array.prototype.forEach.call(document.querySelectorAll('.toc a'), function (a) {
-      var id = (a.dataset.toc || '').replace('lesson', '');
-      a.classList.toggle('is-done', !!doneSet[id]);
+      a.classList.toggle('is-done', !!doneSet[a.dataset.course]);
     });
 
     var c = document.getElementById('doneCount');
     if (c) c.textContent = count;
+    var total = document.getElementById('doneTotal');
+    if (total) total.textContent = courseIds.length;
     var bar = document.getElementById('doneBar');
-    if (bar) bar.style.width = Math.min(100, (count / 7) * 100) + '%';
+    if (bar) bar.style.width = Math.min(100, (count / courseIds.length) * 100) + '%';
 
-    store.set('done', Object.keys(doneSet).filter(function (k) { return doneSet[k]; }));
+    store.set('done', courseIds.filter(function (k) { return doneSet[k]; }));
   }
 
   Array.prototype.forEach.call(document.querySelectorAll('.done-btn'), function (b) {
@@ -709,7 +979,14 @@
     renderMiddleC();
     renderFiveNotes();
     renderLadder();
+    renderBassClefDemo();
+    renderBassLadder();
+    renderGrandStaffDemo();
     renderTimeDemo();
+    renderEighthDemo();
+    renderRhythmDemo();
+    renderAccidentalDemo();
+    renderKeySignatureDemo();
     initExercises();
     updateQuizScore();
     nextQuestion();
