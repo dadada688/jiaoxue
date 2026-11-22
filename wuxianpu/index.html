@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>五线谱入门 · 零基础看懂五线谱</title>
-<meta name="description" content="给完全零基础的你：7 个小节，从五条线开始，学会高音谱号、中央 C、全谱表音位和音符时值，再用认音小测和三首简单谱例练习。每个音都能点响。">
+<meta name="description" content="给完全零基础的你：9 个小节，学会高音与低音谱号、中央 C、大谱表、音符时值和变音记号，再用认音小测与三组视读练习巩固。">
 <meta name="theme-color" content="#f7f2e8">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -36,25 +36,27 @@
       </svg>
       <span class="brand-text">
         <strong>五线谱入门</strong>
-        <em>零基础 · 7 小节</em>
+        <em>零基础 · 9 小节</em>
       </span>
     </a>
 
     <nav class="toc" id="toc" aria-label="课程目录">
       <p class="toc-title">课程目录</p>
-      <a href="#lesson1" data-toc="lesson1"><i>01</i><span>五条线，四个间</span><b></b></a>
-      <a href="#lesson2" data-toc="lesson2"><i>02</i><span>谱号与中央 C</span><b></b></a>
-      <a href="#lesson3" data-toc="lesson3"><i>03</i><span>整张谱表</span><b></b></a>
-      <a href="#lesson4" data-toc="lesson4"><i>04</i><span>音符的长短</span><b></b></a>
-      <a href="#lesson5" data-toc="lesson5"><i>05</i><span>练习一：认音</span><b></b></a>
-      <a href="#lesson6" data-toc="lesson6"><i>06</i><span>练习二：读谱</span><b></b></a>
-      <a href="#lesson7" data-toc="lesson7"><i>07</i><span>复习与速查</span><b></b></a>
+      <a href="#lesson1" data-toc="lesson1" data-course="lines"><i>01</i><span>五条线，四个间</span><b></b></a>
+      <a href="#lesson2" data-toc="lesson2" data-course="treble"><i>02</i><span>高音谱号与中央 C</span><b></b></a>
+      <a href="#lesson3" data-toc="lesson3" data-course="treble-notes"><i>03</i><span>高音谱表音位</span><b></b></a>
+      <a href="#lesson4" data-toc="lesson4" data-course="bass"><i>04</i><span>低音谱号与大谱表</span><b></b></a>
+      <a href="#lesson5" data-toc="lesson5" data-course="rhythm"><i>05</i><span>音符长短与休止</span><b></b></a>
+      <a href="#lesson6" data-toc="lesson6" data-course="accidentals"><i>06</i><span>升降、还原与调号</span><b></b></a>
+      <a href="#lesson7" data-toc="lesson7" data-course="quiz"><i>07</i><span>练习一：认音</span><b></b></a>
+      <a href="#lesson8" data-toc="lesson8" data-course="sight"><i>08</i><span>练习二：综合视读</span><b></b></a>
+      <a href="#lesson9" data-toc="lesson9" data-course="review"><i>09</i><span>复习与速查</span><b></b></a>
     </nav>
 
     <div class="side-cta">
       <p>进度自动保存在你的浏览器里，随时回来接着学。</p>
       <div class="side-progress">
-        <span class="side-progress-num"><b id="doneCount">0</b>/7</span>
+        <span class="side-progress-num"><b id="doneCount">0</b>/<span id="doneTotal">9</span></span>
         <div class="side-progress-bar"><span id="doneBar"></span></div>
       </div>
     </div>
@@ -68,17 +70,17 @@
         <p class="eyebrow">零基础 · 只看谱，不弹琴也能学</p>
         <h1>五线谱没那么难，<br>它只是<em>五条线</em>。</h1>
         <p class="hero-lead">
-          这一页只做一件事：让你从「完全不认识」到「看到一个音就能说出它叫什么」。
-          7 个小节，讲清谱号、中央 C、整张谱表和音符长短，最后用认音小测和三首简单谱例练手。
+          这一页只做一件事：让你从「完全不认识」到「拿到一张简单钢琴谱，知道先看什么、怎么读」。
+          9 个小节，讲清高音与低音谱号、大谱表、音符长短和变音记号，再用认音小测与三组视读练习巩固。
         </p>
         <div class="hero-actions">
           <a class="btn btn--primary btn--lg" href="#lesson1">从第 1 课开始</a>
-          <a class="btn btn--ghost btn--lg" href="#lesson5">直接做认音小测</a>
+          <a class="btn btn--ghost btn--lg" href="#lesson7">直接做认音小测</a>
         </div>
         <ul class="hero-stats">
-          <li><strong>5</strong><span>条线 / 4 个间</span></li>
-          <li><strong>12</strong><span>个音位</span></li>
-          <li><strong>3</strong><span>首练习谱例</span></li>
+          <li><strong>2</strong><span>种常用谱号</span></li>
+          <li><strong>9</strong><span>节读谱小课</span></li>
+          <li><strong>3</strong><span>组视读练习</span></li>
           <li><strong>0</strong><span>基础要求</span></li>
         </ul>
       </div>
@@ -107,12 +109,14 @@
 
       <ol class="route" aria-label="学习路线">
         <li><i>01</i><span>认线</span></li>
-        <li><i>02</i><span>认谱号</span></li>
-        <li><i>03</i><span>认音位</span></li>
-        <li><i>04</i><span>认长短</span></li>
-        <li><i>05</i><span>认音小测</span></li>
-        <li><i>06</i><span>读谱例</span></li>
-        <li><i>07</i><span>查速记</span></li>
+        <li><i>02</i><span>认高音谱号</span></li>
+        <li><i>03</i><span>认高音音位</span></li>
+        <li><i>04</i><span>认低音与大谱表</span></li>
+        <li><i>05</i><span>认长短与休止</span></li>
+        <li><i>06</i><span>认变音</span></li>
+        <li><i>07</i><span>认音小测</span></li>
+        <li><i>08</i><span>综合视读</span></li>
+        <li><i>09</i><span>查速记</span></li>
       </ol>
     </section>
 
@@ -155,7 +159,7 @@
           <p>五个线、四个间，从下往上数；越往上音越高，音只住在线上或间里。</p>
         </div>
 
-        <button class="done-btn" type="button" data-done="1">标记第 1 课已完成</button>
+        <button class="done-btn" type="button" data-done="lines">标记第 1 课已完成</button>
       </div>
     </section>
 
@@ -202,7 +206,7 @@
           <p>先看谱号：高音谱号的第 2 线是 G；下加一线是中央 C。</p>
         </div>
 
-        <button class="done-btn" type="button" data-done="2">标记第 2 课已完成</button>
+        <button class="done-btn" type="button" data-done="treble">标记第 2 课已完成</button>
       </div>
     </section>
 
@@ -265,7 +269,7 @@
           <p>锚点三个：C4 下加一线、G4 第 2 线、C5 第 3 间。其余的音，数过去。</p>
         </div>
 
-        <button class="done-btn" type="button" data-done="3">标记第 3 课已完成</button>
+        <button class="done-btn" type="button" data-done="treble-notes">标记第 3 课已完成</button>
       </div>
     </section>
 
@@ -273,14 +277,68 @@
     <section class="lesson" id="lesson4" data-lesson="4">
       <header class="lesson-head">
         <span class="lesson-index">04</span>
-        <h2>音符的长短：看形状就知道</h2>
-        <p class="lesson-lead">音高由「位置」决定，长短由「形状」决定。四个形状，一辈子够用。</p>
-        <p class="lesson-time">预计 8 分钟 · 本节只讲看图，不需要乐器</p>
+        <h2>低音谱号与钢琴大谱表</h2>
+        <p class="lesson-lead">钢琴谱通常有上下两行。学会低音谱号，你就不再只认识右手旋律，也能读懂左手那一行。</p>
+        <p class="lesson-time">预计 10 分钟 · 读完音名后，可以在自己的钢琴上找音核对</p>
       </header>
 
       <div class="lesson-body">
 
-        <h3><span class="h3-num">4.1</span>四种基本形状</h3>
+        <h3><span class="h3-num">4.1</span>低音谱号，就是「F 谱号」</h3>
+        <p>低音谱号右边的两个点，一上一下夹着<strong>第 4 线</strong>。这条线就是 <strong>F3</strong>。它的读谱方法和高音谱表完全一样：先固定一个锚点，再沿线和间逐格数。</p>
+        <div class="staff-card">
+          <div id="bassClefDemo"></div>
+          <p class="staff-caption">低音谱号的两个点夹着第 4 线：这条线是 F3。</p>
+        </div>
+        <div class="fact-grid fact-grid--3">
+          <div class="fact"><span class="fact-k">G2 · 第 1 线</span><p>低音谱表最下面的线，是左手的低音起点。</p></div>
+          <div class="fact"><span class="fact-k">F3 · 第 4 线</span><p>谱号两个点夹住的线，是最可靠的锚点。</p></div>
+          <div class="fact"><span class="fact-k">C4 · 上加一线</span><p>低音谱表往上越过第 5 线，再加一条线，就是中央 C。</p></div>
+        </div>
+
+        <h3><span class="h3-num">4.2</span>从 G2 数到中央 C</h3>
+        <p>低音谱表第 1 线不是 E，而是 G。先看谱号，再数位置，不能把高音谱表的音名直接搬过来。</p>
+        <div class="staff-card">
+          <div id="bassLadder"></div>
+          <p class="staff-caption">G2 → A2 → B2 → C3……一直数到上加一线的中央 C（C4）。</p>
+        </div>
+        <div class="callout callout--key">
+          <b>同一个中央 C，有两种写法：</b>在高音谱表是下加一线，在低音谱表是上加一线。它们的位置不同，但指向钢琴上的同一个音。
+        </div>
+
+        <h3><span class="h3-num">4.3</span>上下两行合起来，就是大谱表</h3>
+        <p>钢琴谱常用<strong>大谱表</strong>：上面是高音谱表，通常由右手演奏；下面是低音谱表，通常由左手演奏。左边的大括号表示两行要放在同一时间轴里看。</p>
+        <div class="staff-card">
+          <div id="grandStaffDemo"></div>
+          <p class="staff-caption">同一时间点上，右手和左手各有自己的音；先分开读，再上下对齐。</p>
+        </div>
+        <ol class="steps">
+          <li><b>先看两个谱号。</b>确认上面是高音、下面是低音，不要混用锚点。</li>
+          <li><b>先右手，再左手。</b>各读一遍音名；在自己的钢琴上分别找到并弹响核对。</li>
+          <li><b>最后上下对齐。</b>看哪些音同时出现、哪些音先后出现，再合起来读。</li>
+        </ol>
+
+        <div class="takeaway">
+          <span class="takeaway-label">这一课只需要记住</span>
+          <p>低音第 4 线是 F3，上加一线是中央 C；大谱表上方通常右手读，下方通常左手读。</p>
+        </div>
+
+        <button class="done-btn" type="button" data-done="bass">标记第 4 课已完成</button>
+      </div>
+    </section>
+
+    <!-- ================= LESSON 5 ================= -->
+    <section class="lesson" id="lesson5" data-lesson="5">
+      <header class="lesson-head">
+        <span class="lesson-index">05</span>
+        <h2>音符的长短：八分音符与休止</h2>
+        <p class="lesson-lead">音高由「位置」决定，长短由「形状」决定。除了弹多久，还要知道什么时候停下来。</p>
+        <p class="lesson-time">预计 10 分钟 · 先用嘴数拍，再用手轻拍桌面</p>
+      </header>
+
+      <div class="lesson-body">
+
+        <h3><span class="h3-num">5.1</span>四种基本形状</h3>
         <div class="note-table">
           <div class="note-row">
             <div class="note-icon"><svg viewBox="0 0 60 80" aria-hidden="true"><ellipse cx="22" cy="58" rx="14" ry="10" fill="none" stroke="#3a332b" stroke-width="4" transform="rotate(-18 22 58)"/></svg></div>
@@ -300,37 +358,107 @@
           </div>
         </div>
 
-        <h3><span class="h3-num">4.2</span>一个小点，加一半</h3>
+        <h3><span class="h3-num">5.2</span>两个八分音符，合成一拍</h3>
+        <p>一个八分音符是半拍，两个正好一拍。数拍时在整数拍之间加一个「和」：<strong>1 和、2 和、3 和、4 和</strong>。数字落在正拍，「和」落在半拍。</p>
+        <div class="staff-card">
+          <div id="eighthDemo"></div>
+          <p class="staff-caption">符尾朝右弯的是八分音符；每两个八分音符对齐一个完整拍。</p>
+        </div>
+
+        <h3><span class="h3-num">5.3</span>一个小点，加一半</h3>
         <p>音符右边加一个<strong>附点</strong>，表示「再延长它自己一半的长度」：</p>
         <ul class="check-list">
-          <li>附点二分音符 = 2 + 1 = <strong>3 拍</strong>（最常见的「三拍子长音」）。</li>
-          <li>附点四分音符 = 1 + 0.5 = <strong>1.5 拍</strong>。</li>
+          <li>附点二分音符 = 2 + 1 = <strong>3 拍</strong>。</li>
+          <li>附点四分音符 = 1 + 0.5 = <strong>1.5 拍</strong>，常和后面的一个八分音符凑成 2 拍。</li>
         </ul>
 
-        <h3><span class="h3-num">4.3</span>小节与拍号</h3>
+        <h3><span class="h3-num">5.4</span>休止符：不出声，也照样数拍</h3>
+        <div class="fact-grid">
+          <div class="fact symbol-fact"><span class="rest-symbol" aria-hidden="true">𝄽</span><span class="fact-k">四分休止符 · 1 拍</span><p>停一拍。心里继续数，不要提前进入下一个音。</p></div>
+          <div class="fact symbol-fact"><span class="rest-symbol" aria-hidden="true">𝄾</span><span class="fact-k">八分休止符 · 半拍</span><p>停半拍，常占一个「和」或正拍的一半。</p></div>
+        </div>
+
+        <h3><span class="h3-num">5.5</span>小节与拍号</h3>
         <p>谱子开头会写一个像分数的记号，比如 <strong>4/4</strong>，这叫<strong>拍号</strong>。它告诉你两件事：每小节有几拍、以什么音符为一拍。</p>
         <p><strong>4/4 拍</strong>读作「四四拍」：以四分音符为一拍，每小节 4 拍。竖着的<strong>小节线</strong>把谱子切成一小节一小节，方便你数。</p>
 
         <div class="staff-card">
           <div id="timeDemo"></div>
-          <p class="staff-caption">一小节 4 拍：正好放下 4 个四分音符。点音符可以听。</p>
+          <p class="staff-caption">一小节 4 拍：正好放下 4 个四分音符。</p>
+        </div>
+
+        <h3><span class="h3-num">5.6</span>把音和休止放进同一条节奏</h3>
+        <p>先看每小节的形状，再把时值相加等于 4。休止符所在的位置只数拍、不唱音名。</p>
+        <div class="staff-card">
+          <div id="rhythmDemo"></div>
+          <p class="staff-caption">两小节都是 4 拍；谱面下方标出了每一拍怎么数。</p>
         </div>
 
         <div class="takeaway">
           <span class="takeaway-label">这一课只需要记住</span>
-          <p>空心是长音，实心是短音；有没有符干、有没有钩，决定它几拍。</p>
+          <p>两个八分音符是一拍；附点多一半；休止是不发声的拍子，不能跳过不数。</p>
         </div>
 
-        <button class="done-btn" type="button" data-done="4">标记第 4 课已完成</button>
+        <button class="done-btn" type="button" data-done="rhythm">标记第 5 课已完成</button>
       </div>
     </section>
 
-    <!-- ================= LESSON 5 ================= -->
-    <section class="lesson" id="lesson5" data-lesson="5">
+    <!-- ================= LESSON 6 ================= -->
+    <section class="lesson" id="lesson6" data-lesson="6">
       <header class="lesson-head">
-        <span class="lesson-index">05</span>
+        <span class="lesson-index">06</span>
+        <h2>升降号、还原号与调号</h2>
+        <p class="lesson-lead">音符左边的小符号不是装饰。它们告诉你：这个音要不要升高、降低，或者回到原来的高度。</p>
+        <p class="lesson-time">预计 8 分钟 · 只学看规则，不背调性</p>
+      </header>
+
+      <div class="lesson-body">
+
+        <h3><span class="h3-num">6.1</span>先认识三个符号</h3>
+        <div class="fact-grid fact-grid--3">
+          <div class="fact symbol-fact"><span class="accidental-symbol" aria-hidden="true">♯</span><span class="fact-k">升号 · 高半音</span><p>F 左边有 ♯，就读 F♯。在自己的钢琴上找它右边相邻的键。</p></div>
+          <div class="fact symbol-fact"><span class="accidental-symbol" aria-hidden="true">♭</span><span class="fact-k">降号 · 低半音</span><p>B 左边有 ♭，就读 B♭。在自己的钢琴上找它左边相邻的键。</p></div>
+          <div class="fact symbol-fact"><span class="accidental-symbol" aria-hidden="true">♮</span><span class="fact-k">还原号 · 取消变音</span><p>把本小节先前的升降，或调号带来的升降取消，回到自然音。</p></div>
+        </div>
+        <p class="muted">符号写在音符左边，读名称时却说在音名后面：写作「♯ + F」，读作「F 升」或「F sharp」。</p>
+
+        <h3><span class="h3-num">6.2</span>临时变音：只管理当前小节</h3>
+        <p>写在某个音符左边的升降号叫<strong>临时变音记号</strong>。从它出现开始，同一小节内、同一线间上的同名音都跟着变；跨过小节线后自动失效。</p>
+        <div class="staff-card">
+          <div id="accidentalDemo"></div>
+          <p class="staff-caption">第一小节：F♯、F♯、还原 F；第二小节：没有符号，恢复为自然 F。</p>
+        </div>
+        <ul class="check-list">
+          <li>第二个 F 没再写升号，仍然是 F♯，因为还在同一小节。</li>
+          <li>还原号出现后，同一位置的 F 回到自然音。</li>
+          <li>过了小节线，临时升号不再有效；新小节若还需要，会重新写出来。</li>
+        </ul>
+
+        <h3><span class="h3-num">6.3</span>调号：写在谱号后面的长期提醒</h3>
+        <p>谱号右边、拍号左边集中出现的一组升降号叫<strong>调号</strong>。它不是只管一个音，而是让整段谱子里的同名音都按规则升降，包括不同八度，直到调号改变或被临时还原。</p>
+        <div class="staff-card">
+          <div id="keySignatureDemo"></div>
+          <p class="staff-caption">开头一个升号写在 F 线上：后面的 F4、F5 即使不重复写 ♯，也都读 F♯。</p>
+        </div>
+        <div class="callout callout--key">
+          <b>读谱顺序：</b>先看谱号，再看调号，再看拍号，最后才逐个读音符。这个顺序能避免「每个音都认识，却全都读错」。
+        </div>
+
+        <div class="takeaway">
+          <span class="takeaway-label">这一课只需要记住</span>
+          <p>升半音、降半音、还原取消变音；临时记号管当前小节，调号管同名音的各个八度。</p>
+        </div>
+
+        <button class="done-btn" type="button" data-done="accidentals">标记第 6 课已完成</button>
+      </div>
+    </section>
+
+    <!-- ================= LESSON 7 ================= -->
+    <section class="lesson" id="lesson7" data-lesson="7">
+      <header class="lesson-head">
+        <span class="lesson-index">07</span>
         <h2>练习一：认音小测</h2>
-        <p class="lesson-lead">三个难度，每组 10 题。答案可以选「音名」或「简谱」——这正是五线谱和简谱的对照练习。答错不要紧，看解析比答对更有用。</p>
+        <p class="lesson-lead">四个难度，每组 10 题。高音练熟后切换到低音；答案可以选「音名」或「简谱」，答错后重点看位置解析。</p>
         <p class="lesson-time">建议 3 分钟一轮 · 正确率到 90% 再升难度</p>
       </header>
 
@@ -345,6 +473,7 @@
             <button type="button" data-level="base" class="is-on">基础 · C4–G4</button>
             <button type="button" data-level="mid">进阶 · C4–C5</button>
             <button type="button" data-level="hard">挑战 · C4–G5</button>
+            <button type="button" data-level="bass">低音 · G2–C4</button>
           </div>
           <div class="level-tabs level-tabs--format" id="quizFormat">
             <span class="level-tabs-label">答案用</span>
@@ -359,41 +488,41 @@
         </div>
 
         <div class="callout">
-          <b>答错时看解析：</b>它会告诉你这个音在第几线或第几间、离哪个锚点最近。把解析读一遍，比再刷十题更有效。
+          <b>答错时看解析：</b>它会告诉你音名、简谱和所在线间。低音题先找 F3 第 4 线或中央 C 上加一线，再数过去。
         </div>
 
         <div class="takeaway">
           <span class="takeaway-label">练习目标</span>
-          <p>看到音符 2 秒内说出音名，说明你已经可以开始读真正的谱子了。</p>
+          <p>先做到不看答案能读对，再逐渐缩短思考时间；不要为了快而跳过谱号和锚点。</p>
         </div>
 
-        <button class="done-btn" type="button" data-done="5">标记第 5 课已完成</button>
+        <button class="done-btn" type="button" data-done="quiz">标记第 7 课已完成</button>
       </div>
     </section>
 
-    <!-- ================= LESSON 6 ================= -->
-    <section class="lesson" id="lesson6" data-lesson="6">
+    <!-- ================= LESSON 8 ================= -->
+    <section class="lesson" id="lesson8" data-lesson="8">
       <header class="lesson-head">
-        <span class="lesson-index">06</span>
-        <h2>练习二：读三首简单谱例</h2>
-        <p class="lesson-lead">把刚学的音放进真实的谱子里。点任何一个音符，它会响，并显示音名和简谱。</p>
-        <p class="lesson-time">每首 5 分钟 · 先自己读，再点开对答案</p>
+        <span class="lesson-index">08</span>
+        <h2>练习二：高音、低音与大谱表</h2>
+        <p class="lesson-lead">三组短练习，各只解决一个问题。先自己读音名，再显示答案，最后在自己的钢琴上分手核对。</p>
+        <p class="lesson-time">每组 5 分钟 · 网页声音只用来核对，不代替你的钢琴</p>
       </header>
 
       <div class="lesson-body">
 
-        <h3><span class="h3-num">6.1</span>怎么用这三个练习</h3>
+        <h3><span class="h3-num">8.1</span>怎么用这三个练习</h3>
         <ol class="steps">
-          <li><b>先自己读。</b>用手指从第一个音数到最后一个，把音名说出来，不要急着点。</li>
-          <li><b>再对答案。</b>点「显示音名」，或者逐个点音符，看自己有没有读错。</li>
-          <li><b>最后听。</b>点「播放」，一边听一边用手指跟着谱面走。</li>
+          <li><b>先读开头。</b>确认谱号、调号、拍号，再看第一个音在哪里。</li>
+          <li><b>先自己读。</b>把音名和拍子说出来；大谱表先右手、再左手。</li>
+          <li><b>再核对。</b>点「显示音名」检查，在自己的钢琴上找音；需要听旋律时再点「播放」。</li>
         </ol>
 
         <div class="exercise" data-melody="twinkle">
           <div class="ex-head">
             <div>
-              <p class="ex-kicker">谱例 01 · 4/4 拍 · 2 小节</p>
-              <h3 class="ex-title">小星星（开头）</h3>
+              <p class="ex-kicker">练习 01 · 高音谱表 · 4/4 拍 · 2 小节</p>
+              <h3 class="ex-title">小星星：先让眼睛跟上旋律</h3>
             </div>
             <div class="ex-actions">
               <button class="btn btn--primary btn--sm" type="button" data-act="play">播放</button>
@@ -402,14 +531,14 @@
             </div>
           </div>
           <div class="ex-staff"></div>
-          <p class="ex-hint">提示：这一首只用到 C4 到 A4，全部在第一间到第二间附近。</p>
+          <p class="ex-hint">目标：只用 C4 到 A4；每小节结尾的二分音符读作两拍。</p>
         </div>
 
-        <div class="exercise" data-melody="ode">
+        <div class="exercise" data-melody="bassSteps">
           <div class="ex-head">
             <div>
-              <p class="ex-kicker">谱例 02 · 4/4 拍 · 4 小节</p>
-              <h3 class="ex-title">欢乐颂（开头）</h3>
+              <p class="ex-kicker">练习 02 · 低音谱表 · 临时变音 · 4 小节</p>
+              <h3 class="ex-title">低音阶梯：别再把第 1 线读成 E</h3>
             </div>
             <div class="ex-actions">
               <button class="btn btn--primary btn--sm" type="button" data-act="play">播放</button>
@@ -418,14 +547,14 @@
             </div>
           </div>
           <div class="ex-staff"></div>
-          <p class="ex-hint">提示：全程只用 C D E F G 五个音，是最标准的入门谱例。</p>
+          <p class="ex-hint">目标：先找 G2 第 1 线与 F3 第 4 线；注意第二小节的 F♯、还原 F，以及跨小节后恢复自然音。</p>
         </div>
 
-        <div class="exercise" data-melody="mary">
+        <div class="exercise" data-melody="grand">
           <div class="ex-head">
             <div>
-              <p class="ex-kicker">谱例 03 · 4/4 拍 · 4 小节</p>
-              <h3 class="ex-title">玛丽有只小羊羔</h3>
+              <p class="ex-kicker">练习 03 · 大谱表 · 一个升号 · 4 小节</p>
+              <h3 class="ex-title">第一次双手读谱：先分开，再对齐</h3>
             </div>
             <div class="ex-actions">
               <button class="btn btn--primary btn--sm" type="button" data-act="play">播放</button>
@@ -434,74 +563,90 @@
             </div>
           </div>
           <div class="ex-staff"></div>
-          <p class="ex-hint">提示：注意每小节结尾的二分音符，它要占两拍。</p>
+          <p class="ex-hint">目标：右手读四分音符，左手每小节读一个全音符；调号中的 F♯ 对右手所有 F 都有效。</p>
         </div>
 
         <div class="takeaway">
           <span class="takeaway-label">这一课只需要记住</span>
-          <p>读谱不是靠背，是靠数。数熟了，眼睛自然就认得了。</p>
+          <p>先看谱号、调号和拍号；高音与低音分开读，双手谱先分手再对齐。</p>
         </div>
 
-        <button class="done-btn" type="button" data-done="6">标记第 6 课已完成</button>
+        <button class="done-btn" type="button" data-done="sight">标记第 8 课已完成</button>
       </div>
     </section>
 
-    <!-- ================= LESSON 7 ================= -->
-    <section class="lesson" id="lesson7" data-lesson="7">
+    <!-- ================= LESSON 9 ================= -->
+    <section class="lesson" id="lesson9" data-lesson="9">
       <header class="lesson-head">
-        <span class="lesson-index">07</span>
+        <span class="lesson-index">09</span>
         <h2>复习、速查、下一步</h2>
-        <p class="lesson-lead">把这一页压缩成一张卡片，随时回来查。最后告诉你接下来该学什么。</p>
-        <p class="lesson-time">每次复习 3 分钟 · 建议连续两周</p>
+        <p class="lesson-lead">把这一页压缩成一张速查卡。复习时先回忆，再看答案，最后到自己的钢琴上核对。</p>
+        <p class="lesson-time">每次复习 3 分钟 · 先准确，再提速</p>
       </header>
 
       <div class="lesson-body">
 
-        <h3><span class="h3-num">7.1</span>每日 10 分钟怎么练</h3>
+        <h3><span class="h3-num">9.1</span>每次 10 分钟怎么复习</h3>
         <div class="fact-grid fact-grid--3">
-          <div class="fact"><span class="fact-k">3 分钟</span><p>认音小测做一轮，难度按正确率调整。</p></div>
-          <div class="fact"><span class="fact-k">4 分钟</span><p>读一首谱例：先自己读，再逐个点开对答案。</p></div>
-          <div class="fact"><span class="fact-k">3 分钟</span><p>闭眼回忆三个锚点：C4、G4、C5 分别在哪儿。</p></div>
+          <div class="fact"><span class="fact-k">3 分钟</span><p>高音、低音各做一轮认音小测，答错后说出锚点和数法。</p></div>
+          <div class="fact"><span class="fact-k">4 分钟</span><p>读一张练习谱：先看谱号、调号、拍号，大谱表先分手。</p></div>
+          <div class="fact"><span class="fact-k">3 分钟</span><p>在自己的钢琴上找刚读过的音，弹响核对，不追求曲目速度。</p></div>
         </div>
 
-        <h3><span class="h3-num">7.2</span>五个最常见的卡点</h3>
+        <h3><span class="h3-num">9.2</span>双谱表与符号速查</h3>
+        <div class="table-wrap">
+          <table class="table">
+            <thead><tr><th>看到什么</th><th>在哪里</th><th>怎么读</th></tr></thead>
+            <tbody>
+              <tr><td>高音谱号</td><td>第 2 线</td><td>G4；下加一线是中央 C（C4）</td></tr>
+              <tr><td>低音谱号</td><td>第 4 线</td><td>F3；上加一线是中央 C（C4）</td></tr>
+              <tr><td>低音第 1 线</td><td>最下面的线</td><td>G2，不要套用高音谱表的 E4</td></tr>
+              <tr><td>♯ / ♭</td><td>音符左边或调号里</td><td>升高 / 降低半音</td></tr>
+              <tr><td>♮</td><td>音符左边</td><td>取消当前变音，回到自然音</td></tr>
+              <tr><td>八分音符</td><td>实心符头＋一条符尾</td><td>半拍；两个合成一拍</td></tr>
+              <tr><td>𝄽 / 𝄾</td><td>谱面中的休止位置</td><td>四分 / 八分休止；不出声也数拍</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3><span class="h3-num">9.3</span>五个最常见的卡点</h3>
         <div class="faq">
           <details>
             <summary>线上和间里的音总是搞混，怎么办？</summary>
-            <p>用一个笨办法：拿一张纸，把线和间涂成两种颜色，再把 FACE 和「咪嗦西唻发」各写一遍。手上写过一次，比看十遍有用。</p>
+            <p>先把最下面的线和最上面的线找出来，再从下往上数。高音谱表间里音是 FACE；手上把线和间涂成两种颜色写一遍，会比只看更牢。</p>
           </details>
           <details>
-            <summary>为什么第 2 线是 G，我却总记成别的？</summary>
-            <p>因为你还没把「谱号圈住第 2 线」这个画面记住。回去看第 2 课的那张图，盯着圈圈看 10 秒，再数：第 2 线是 G，往上一个间是 A，再往上是第 3 线 B。</p>
+            <summary>为什么同一条线，在高音和低音谱表里音名不同？</summary>
+            <p>五条线只是坐标，谱号才决定坐标对应什么音。每次拿到谱子先看左边：高音第 2 线是 G4，低音第 4 线是 F3。</p>
+          </details>
+          <details>
+            <summary>大谱表两眼不知道先看哪里，正常吗？</summary>
+            <p>正常。不要一开始就强迫自己同时看两行。先右手读一遍，再左手读一遍，最后只观察上下哪些音在同一拍对齐。</p>
+          </details>
+          <details>
+            <summary>临时升号为什么有时不写也有效？</summary>
+            <p>它在同一小节、同一线间上持续有效，所以后面的同音不必重复写。跨过小节线就失效；调号则会影响同名音的各个八度。</p>
           </details>
           <details>
             <summary>数格子太慢，正常吗？</summary>
-            <p>非常正常。所有人一开始都在数。一般连续两周每天 10 分钟，就会开始「一眼认出」。不要为了快而跳过数格子的阶段。</p>
-          </details>
-          <details>
-            <summary>一定要同时学低音谱号吗？</summary>
-            <p>不用。先把高音谱表认熟，这是旋律最常用的区域。等你要弹左手伴奏、或者看钢琴谱的下半部分时，再学低音谱号，那时候会快很多。</p>
-          </details>
-          <details>
-            <summary>看谱的时候要不要唱出来？</summary>
-            <p>要，非常推荐。边指边唱 do re mi，能把「位置—音名—声音」三者绑在一起。唱不准没关系，目的是建立连接。</p>
+            <p>非常正常。初学时准确比速度重要。先固定锚点，再逐格数；读得多了才会自然变成一眼认出。</p>
           </details>
         </div>
 
-        <h3><span class="h3-num">7.3</span>下一步学什么</h3>
+        <h3><span class="h3-num">9.4</span>下一步学什么</h3>
         <ul class="check-list">
-          <li><b>低音谱号</b>：F 谱号，第 4 线是 F。学法和这一页完全一样。</li>
-          <li><b>调号</b>：谱号右边那几个升降号，决定整首曲子的调。</li>
-          <li><b>五线谱上的和弦</b>：几个音上下叠在一起，就是和弦。</li>
-          <li><b>视唱练耳</b>：看着谱子直接唱出来，是提升读谱速度最快的方法。</li>
+          <li><b>更多拍号</b>：在已经看懂 4/4 后，再认识 3/4 与 6/8 的拍子组织。</li>
+          <li><b>更多调号</b>：从一个升号、一个降号开始，逐步认识常见调号。</li>
+          <li><b>五线谱上的和弦</b>：几个音上下叠在一起时，先分开读每个音，再看它们同时出现。</li>
+          <li><b>视唱练耳</b>：看着谱子唱出音高与节奏，继续加强位置和声音的联系。</li>
         </ul>
 
         <div class="takeaway takeaway--final">
           <span class="takeaway-label">最后一句</span>
-          <p>五线谱不是一门知识，是一个工具。用两周，它就长在你手上了。</p>
+          <p>读谱的顺序比死记更重要：谱号 → 调号 → 拍号 → 音高 → 长短。每次按同一顺序看，就会越来越稳。</p>
         </div>
 
-        <button class="done-btn" type="button" data-done="7">标记第 7 课已完成</button>
+        <button class="done-btn" type="button" data-done="review">标记第 9 课已完成</button>
       </div>
     </section>
 
