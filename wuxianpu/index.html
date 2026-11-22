@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>五线谱入门 · 零基础看懂五线谱</title>
+<meta name="description" content="给完全零基础的你：7 个小节，从五条线开始，学会高音谱号、中央 C、全谱表音位和音符时值，再用认音小测和三首简单谱例练习。每个音都能点响。">
+<meta name="theme-color" content="#f7f2e8">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="readbar"><span id="readbar"></span></div>
+
+<header class="topbar">
+  <a class="topbar-brand" href="#top">五线谱入门</a>
+  <button class="nav-btn" id="navBtn" aria-label="打开课程目录" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<div class="shell">
+
+  <aside class="sidebar" id="sidebar">
+    <a class="side-brand" href="#top">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+        <g stroke="currentColor" stroke-width="1.6" fill="none">
+          <line x1="4" y1="11" x2="28" y2="11"/>
+          <line x1="4" y1="15" x2="28" y2="15"/>
+          <line x1="4" y1="19" x2="28" y2="19"/>
+          <line x1="4" y1="23" x2="28" y2="23"/>
+          <line x1="4" y1="27" x2="28" y2="27"/>
+        </g>
+        <ellipse cx="17" cy="19" rx="3.6" ry="2.7" fill="currentColor" transform="rotate(-20 17 19)"/>
+        <line x1="20.2" y1="18.6" x2="20.2" y2="7" stroke="currentColor" stroke-width="1.8"/>
+      </svg>
+      <span class="brand-text">
+        <strong>五线谱入门</strong>
+        <em>零基础 · 7 小节</em>
+      </span>
+    </a>
+
+    <nav class="toc" id="toc" aria-label="课程目录">
+      <p class="toc-title">课程目录</p>
+      <a href="#lesson1" data-toc="lesson1"><i>01</i><span>五条线，四个间</span><b></b></a>
+      <a href="#lesson2" data-toc="lesson2"><i>02</i><span>谱号与中央 C</span><b></b></a>
+      <a href="#lesson3" data-toc="lesson3"><i>03</i><span>整张谱表</span><b></b></a>
+      <a href="#lesson4" data-toc="lesson4"><i>04</i><span>音符的长短</span><b></b></a>
+      <a href="#lesson5" data-toc="lesson5"><i>05</i><span>练习一：认音</span><b></b></a>
+      <a href="#lesson6" data-toc="lesson6"><i>06</i><span>练习二：读谱</span><b></b></a>
+      <a href="#lesson7" data-toc="lesson7"><i>07</i><span>复习与速查</span><b></b></a>
+    </nav>
+
+    <div class="side-cta">
+      <p>进度自动保存在你的浏览器里，随时回来接着学。</p>
+      <div class="side-progress">
+        <span class="side-progress-num"><b id="doneCount">0</b>/7</span>
+        <div class="side-progress-bar"><span id="doneBar"></span></div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <!-- ================= HERO ================= -->
+    <section class="hero" id="top">
+      <div class="hero-copy">
+        <p class="eyebrow">零基础 · 只看谱，不弹琴也能学</p>
+        <h1>五线谱没那么难，<br>它只是<em>五条线</em>。</h1>
+        <p class="hero-lead">
+          这一页只做一件事：让你从「完全不认识」到「看到一个音就能说出它叫什么」。
+          7 个小节，讲清谱号、中央 C、整张谱表和音符长短，最后用认音小测和三首简单谱例练手。
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn--primary btn--lg" href="#lesson1">从第 1 课开始</a>
+          <a class="btn btn--ghost btn--lg" href="#lesson5">直接做认音小测</a>
+        </div>
+        <ul class="hero-stats">
+          <li><strong>5</strong><span>条线 / 4 个间</span></li>
+          <li><strong>12</strong><span>个音位</span></li>
+          <li><strong>3</strong><span>首练习谱例</span></li>
+          <li><strong>0</strong><span>基础要求</span></li>
+        </ul>
+      </div>
+      <figure class="hero-figure">
+        <div class="hero-art">
+          <svg viewBox="0 0 480 300" role="img" aria-label="高音谱表上的一段上行旋律">
+            <g stroke="#c9bda9" stroke-width="1.5">
+              <line x1="52" y1="90" x2="452" y2="90"/>
+              <line x1="52" y1="112" x2="452" y2="112"/>
+              <line x1="52" y1="134" x2="452" y2="134"/>
+              <line x1="52" y1="156" x2="452" y2="156"/>
+              <line x1="52" y1="178" x2="452" y2="178"/>
+            </g>
+            <text x="42" y="178" font-size="122" fill="#b8873f" class="clef-glyph">𝄞</text>
+            <g fill="#2b241c">
+              <g><ellipse cx="170" cy="178" rx="10.2" ry="7.4" transform="rotate(-18 170 178)"/><line x1="179" y1="175" x2="179" y2="126" stroke="#2b241c" stroke-width="2.6"/></g>
+              <g><ellipse cx="240" cy="156" rx="10.2" ry="7.4" transform="rotate(-18 240 156)"/><line x1="249" y1="153" x2="249" y2="104" stroke="#2b241c" stroke-width="2.6"/></g>
+              <g><ellipse cx="310" cy="145" rx="10.2" ry="7.4" transform="rotate(-18 310 145)"/><line x1="319" y1="142" x2="319" y2="93" stroke="#2b241c" stroke-width="2.6"/></g>
+              <g><ellipse cx="380" cy="123" rx="10.2" ry="7.4" transform="rotate(-18 380 123)"/><line x1="370.8" y1="126" x2="370.8" y2="173" stroke="#2b241c" stroke-width="2.6"/></g>
+            </g>
+            <circle cx="240" cy="156" r="26" fill="none" stroke="#b8873f" stroke-width="1.6" stroke-dasharray="3 5"/>
+          </svg>
+        </div>
+        <figcaption>一条旋律在谱面上其实是「高低起伏的线」。</figcaption>
+      </figure>
+
+      <ol class="route" aria-label="学习路线">
+        <li><i>01</i><span>认线</span></li>
+        <li><i>02</i><span>认谱号</span></li>
+        <li><i>03</i><span>认音位</span></li>
+        <li><i>04</i><span>认长短</span></li>
+        <li><i>05</i><span>认音小测</span></li>
+        <li><i>06</i><span>读谱例</span></li>
+        <li><i>07</i><span>查速记</span></li>
+      </ol>
+    </section>
+
+    <!-- ================= LESSON 1 ================= -->
+    <section class="lesson" id="lesson1" data-lesson="1">
+      <header class="lesson-head">
+        <span class="lesson-index">01</span>
+        <h2>五条线，四个间</h2>
+        <p class="lesson-lead">先别管音符叫什么。这一课只要看懂图纸：线在哪、间在哪、为什么越往上音越高。</p>
+        <p class="lesson-time">预计 8 分钟 · 建议用电脑或平板看这一节</p>
+      </header>
+
+      <div class="lesson-body">
+
+        <h3><span class="h3-num">1.1</span>只有三条规则</h3>
+        <div class="fact-grid fact-grid--3">
+          <div class="fact"><span class="fact-k">规则一</span><p><strong>五条平行线，四个间。</strong>线从下往上数：第 1 线在最下面，第 5 线在最上面。</p></div>
+          <div class="fact"><span class="fact-k">规则二</span><p><strong>越往上，音越高。</strong>同一张谱表里，位置高一格，音就高一个音级。</p></div>
+          <div class="fact"><span class="fact-k">规则三</span><p><strong>音只住在线上或间里。</strong>线和间交替排列，一个接一个，不会跳格。</p></div>
+        </div>
+
+        <h3><span class="h3-num">1.2</span>把鼠标移到线上或间里</h3>
+        <p>五条线之间夹出来的空白，叫「间」。点在图上任意一条线或一个间，下面会告诉你它是第几线 / 第几间。</p>
+
+        <div class="staff-card">
+          <div id="anatomy"></div>
+          <p class="staff-caption" id="anatomyCaption">把鼠标移到线上或间里试试。</p>
+        </div>
+
+        <div class="callout">
+          <b>数数的方向永远是「从下往上」。</b>最下面那条是第 1 线，最上面那条是第 5 线；间也一样，最下面是第 1 间。这一点和读文字相反，刚开始最容易搞错。
+        </div>
+
+        <h3><span class="h3-num">1.3</span>线和间是一格一格交替的</h3>
+        <p>从第 1 线开始往上走，顺序永远是：<strong>第 1 线 → 第 1 间 → 第 2 线 → 第 2 间 → 第 3 线 → 第 3 间 → 第 4 线 → 第 4 间 → 第 5 线</strong>。</p>
+        <p>一共 9 个格子。每一个格子放一个音，所以五线谱里没有「跳过」这回事——相邻的两个音，位置一定挨着。</p>
+
+        <div class="takeaway">
+          <span class="takeaway-label">这一课只需要记住</span>
+          <p>五个线、四个间，从下往上数；越往上音越高，音只住在线上或间里。</p>
+        </div>
+
+        <button class="done-btn" type="button" data-done="1">标记第 1 课已完成</button>
+      </div>
+    </section>
+
+    <!-- ================= LESSON 2 ================= -->
+    <section class="lesson" id="lesson2" data-lesson="2">
+      <header class="lesson-head">
+        <span class="lesson-index">02</span>
+        <h2>左边那个花体字：谱号</h2>
+        <p class="lesson-lead">同样的五条线，配上不同的谱号，音名就完全不一样。所以认谱的第一步，永远是先看左边。</p>
+        <p class="lesson-time">预计 8 分钟 · 本节有声音，建议开音量</p>
+      </header>
+
+      <div class="lesson-body">
+
+        <h3><span class="h3-num">2.1</span>高音谱号，其实就是「G 谱号」</h3>
+        <p>谱子最左边那个像花体字母的符号，叫<strong>高音谱号</strong>，也叫 <strong>G 谱号</strong>。原因很直接：它的圈圈正好绕在<strong>第 2 线</strong>上，而在这张谱表里，第 2 线就是 <b>G</b>。</p>
+        <p>你不需要会画它，只要认得它，并且记住：<strong>有它在，第 2 线 = G</strong>。</p>
+
+        <div class="staff-card">
+          <div id="clefDemo"></div>
+          <p class="staff-caption">谱号圈住第 2 线，这条线就是 G（简谱 5）。点一下音符听听看。</p>
+        </div>
+
+        <h3><span class="h3-num">2.2</span>中央 C：住在「下加一线」</h3>
+        <p>五线谱不够用时，会在下面或上面临时加一小段短横线，叫<strong>加线</strong>。中央 C（C4）就在谱表下方的<strong>第一条加线</strong>上，习惯叫「下加一线」。</p>
+        <div class="callout callout--key">
+          <b>这是全站最重要的一个坐标：</b>下加一线 = 中央 C。先把它焊在脑子里，其他音都从它出发往上数。
+        </div>
+
+        <div class="staff-card">
+          <div id="middleC"></div>
+          <p class="staff-caption">下加一线上的音就是中央 C。点击可以听。</p>
+        </div>
+
+        <h3><span class="h3-num">2.3</span>顺着数上去：C D E F G</h3>
+        <p>从中央 C 开始，一个格子一个格子往上走，就得到最常用的五个音：</p>
+        <div class="staff-card">
+          <div id="fiveNotes"></div>
+          <p class="staff-caption">C4 → D4 → E4 → F4 → G4，位置连续，中间没有跳格。</p>
+        </div>
+
+        <div class="takeaway">
+          <span class="takeaway-label">这一课只需要记住</span>
+          <p>先看谱号：高音谱号的第 2 线是 G；下加一线是中央 C。</p>
+        </div>
+
+        <button class="done-btn" type="button" data-done="2">标记第 2 课已完成</button>
+      </div>
+    </section>
+
+    <!-- ================= LESSON 3 ================= -->
+    <section class="lesson" id="lesson3" data-lesson="3">
+      <header class="lesson-head">
+        <span class="lesson-index">03</span>
+        <h2>整张谱表：从 C4 到 G5</h2>
+        <p class="lesson-lead">把 12 个常用音一次看全。不用背，先看懂它是怎么一格一格排上去的。</p>
+        <p class="lesson-time">预计 10 分钟 · 建议边看边用手指在屏幕上数</p>
+      </header>
+
+      <div class="lesson-body">
+
+        <h3><span class="h3-num">3.1</span>一张图看完全部音位</h3>
+        <p>下面这 12 个音，覆盖了初学阶段 95% 的谱子。点任意一个音，可以听到它，也能看到它的音名和简谱。</p>
+        <div class="staff-card">
+          <div id="ladder"></div>
+          <p class="staff-caption">虚线只是指向下面的标签，不是谱面的一部分。</p>
+        </div>
+
+        <h3><span class="h3-num">3.2</span>三个锚点，其余靠数</h3>
+        <div class="fact-grid fact-grid--3">
+          <div class="fact"><span class="fact-k">C4</span><p>下加一线。所有数的起点。</p></div>
+          <div class="fact"><span class="fact-k">G4</span><p>第 2 线。谱号圈住的那条线。</p></div>
+          <div class="fact"><span class="fact-k">C5</span><p>第 3 间。从 C4 往上数 5 格。</p></div>
+        </div>
+        <p>看到不认识的音，先找最近的锚点，再一格一格数过去。<strong>慢是正常的</strong>，数两周就会变成条件反射。</p>
+
+        <h3><span class="h3-num">3.3</span>两个顺口溜</h3>
+        <ul class="check-list">
+          <li><strong>线上音</strong>（从第 1 线到第 5 线）：E · G · B · D · F —— 记成「<b>咪 嗦 西 唻 发</b>」。</li>
+          <li><strong>间里音</strong>（从第 1 间到第 4 间）：F · A · C · E —— 正好拼成英文单词 <b>FACE</b>（脸）。</li>
+        </ul>
+        <p class="muted">先记间里音更容易：FACE 好背，而且 C5 就在第 3 间。</p>
+
+        <h3><span class="h3-num">3.4</span>速查表</h3>
+        <div class="table-wrap">
+          <table class="table">
+            <thead><tr><th>位置</th><th>音名</th><th>唱名</th><th>简谱</th></tr></thead>
+            <tbody>
+              <tr><td>下加一线</td><td>C4</td><td>do</td><td>1</td></tr>
+              <tr><td>下加一间</td><td>D4</td><td>re</td><td>2</td></tr>
+              <tr><td>第 1 线</td><td>E4</td><td>mi</td><td>3</td></tr>
+              <tr><td>第 1 间</td><td>F4</td><td>fa</td><td>4</td></tr>
+              <tr><td>第 2 线</td><td>G4</td><td>sol</td><td>5</td></tr>
+              <tr><td>第 2 间</td><td>A4</td><td>la</td><td>6</td></tr>
+              <tr><td>第 3 线</td><td>B4</td><td>si</td><td>7</td></tr>
+              <tr><td>第 3 间</td><td>C5</td><td>do</td><td>1</td></tr>
+              <tr><td>第 4 线</td><td>D5</td><td>re</td><td>2</td></tr>
+              <tr><td>第 4 间</td><td>E5</td><td>mi</td><td>3</td></tr>
+              <tr><td>第 5 线</td><td>F5</td><td>fa</td><td>4</td></tr>
+              <tr><td>第 5 线上方</td><td>G5</td><td>sol</td><td>5</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="takeaway">
+          <span class="takeaway-label">这一课只需要记住</span>
+          <p>锚点三个：C4 下加一线、G4 第 2 线、C5 第 3 间。其余的音，数过去。</p>
+        </div>
+
+        <button class="done-btn" type="button" data-done="3">标记第 3 课已完成</button>
+      </div>
+    </section>
+
+    <!-- ================= LESSON 4 ================= -->
+    <section class="lesson" id="lesson4" data-lesson="4">
+      <header class="lesson-head">
+        <span class="lesson-index">04</span>
+        <h2>音符的长短：看形状就知道</h2>
+        <p class="lesson-lead">音高由「位置」决定，长短由「形状」决定。四个形状，一辈子够用。</p>
+        <p class="lesson-time">预计 8 分钟 · 本节只讲看图，不需要乐器</p>
+      </header>
+
+      <div class="lesson-body">
+
+        <h3><span class="h3-num">4.1</span>四种基本形状</h3>
+        <div class="note-table">
+          <div class="note-row">
+            <div class="note-icon"><svg viewBox="0 0 60 80" aria-hidden="true"><ellipse cx="22" cy="58" rx="14" ry="10" fill="none" stroke="#3a332b" stroke-width="4" transform="rotate(-18 22 58)"/></svg></div>
+            <div class="note-info"><b>全音符</b><span>4 拍</span><em>空心，没有符干</em></div>
+          </div>
+          <div class="note-row">
+            <div class="note-icon"><svg viewBox="0 0 60 80" aria-hidden="true"><ellipse cx="22" cy="58" rx="14" ry="10" fill="none" stroke="#3a332b" stroke-width="4" transform="rotate(-18 22 58)"/><line x1="35" y1="55" x2="35" y2="12" stroke="#3a332b" stroke-width="4"/></svg></div>
+            <div class="note-info"><b>二分音符</b><span>2 拍</span><em>空心，带符干</em></div>
+          </div>
+          <div class="note-row">
+            <div class="note-icon"><svg viewBox="0 0 60 80" aria-hidden="true"><ellipse cx="22" cy="58" rx="14" ry="10" fill="#3a332b" transform="rotate(-18 22 58)"/><line x1="35" y1="55" x2="35" y2="12" stroke="#3a332b" stroke-width="4"/></svg></div>
+            <div class="note-info"><b>四分音符</b><span>1 拍</span><em>实心，带符干</em></div>
+          </div>
+          <div class="note-row">
+            <div class="note-icon"><svg viewBox="0 0 60 80" aria-hidden="true"><ellipse cx="22" cy="58" rx="14" ry="10" fill="#3a332b" transform="rotate(-18 22 58)"/><line x1="35" y1="55" x2="35" y2="12" stroke="#3a332b" stroke-width="4"/><path d="M35 12C46 20 48 32 38 40" fill="none" stroke="#3a332b" stroke-width="4" stroke-linecap="round"/></svg></div>
+            <div class="note-info"><b>八分音符</b><span>半拍</span><em>实心，带一条符尾</em></div>
+          </div>
+        </div>
+
+        <h3><span class="h3-num">4.2</span>一个小点，加一半</h3>
+        <p>音符右边加一个<strong>附点</strong>，表示「再延长它自己一半的长度」：</p>
+        <ul class="check-list">
+          <li>附点二分音符 = 2 + 1 = <strong>3 拍</strong>（最常见的「三拍子长音」）。</li>
+          <li>附点四分音符 = 1 + 0.5 = <strong>1.5 拍</strong>。</li>
+        </ul>
+
+        <h3><span class="h3-num">4.3</span>小节与拍号</h3>
+        <p>谱子开头会写一个像分数的记号，比如 <strong>4/4</strong>，这叫<strong>拍号</strong>。它告诉你两件事：每小节有几拍、以什么音符为一拍。</p>
+        <p><strong>4/4 拍</strong>读作「四四拍」：以四分音符为一拍，每小节 4 拍。竖着的<strong>小节线</strong>把谱子切成一小节一小节，方便你数。</p>
+
+        <div class="staff-card">
+          <div id="timeDemo"></div>
+          <p class="staff-caption">一小节 4 拍：正好放下 4 个四分音符。点音符可以听。</p>
+        </div>
+
+        <div class="takeaway">
+          <span class="takeaway-label">这一课只需要记住</span>
+          <p>空心是长音，实心是短音；有没有符干、有没有钩，决定它几拍。</p>
+        </div>
+
+        <button class="done-btn" type="button" data-done="4">标记第 4 课已完成</button>
+      </div>
+    </section>
+
+    <!-- ================= LESSON 5 ================= -->
+    <section class="lesson" id="lesson5" data-lesson="5">
+      <header class="lesson-head">
+        <span class="lesson-index">05</span>
+        <h2>练习一：认音小测</h2>
+        <p class="lesson-lead">三个难度，每组 10 题。答案可以选「音名」或「简谱」——这正是五线谱和简谱的对照练习。答错不要紧，看解析比答对更有用。</p>
+        <p class="lesson-time">建议 3 分钟一轮 · 正确率到 90% 再升难度</p>
+      </header>
+
+      <div class="lesson-body">
+
+        <div class="quiz" id="quiz">
+          <div class="quiz-head">
+            <span class="quiz-title">认音小测</span>
+            <span class="quiz-score">本轮 <b id="quizScore">0</b> 对 / <b id="quizTotal">0</b> 题</span>
+          </div>
+          <div class="level-tabs" id="quizLevels">
+            <button type="button" data-level="base" class="is-on">基础 · C4–G4</button>
+            <button type="button" data-level="mid">进阶 · C4–C5</button>
+            <button type="button" data-level="hard">挑战 · C4–G5</button>
+          </div>
+          <div class="level-tabs level-tabs--format" id="quizFormat">
+            <span class="level-tabs-label">答案用</span>
+            <button type="button" data-format="name" class="is-on">音名</button>
+            <button type="button" data-format="jp">简谱</button>
+          </div>
+          <div class="quiz-stage" id="quizStage"></div>
+          <p class="quiz-q" id="quizQ">这个音符是哪个音？</p>
+          <div class="quiz-options" id="quizOptions"></div>
+          <p class="quiz-fb" id="quizFb"></p>
+          <button class="btn btn--ghost btn--sm" type="button" id="quizRestart">换一组题</button>
+        </div>
+
+        <div class="callout">
+          <b>答错时看解析：</b>它会告诉你这个音在第几线或第几间、离哪个锚点最近。把解析读一遍，比再刷十题更有效。
+        </div>
+
+        <div class="takeaway">
+          <span class="takeaway-label">练习目标</span>
+          <p>看到音符 2 秒内说出音名，说明你已经可以开始读真正的谱子了。</p>
+        </div>
+
+        <button class="done-btn" type="button" data-done="5">标记第 5 课已完成</button>
+      </div>
+    </section>
+
+    <!-- ================= LESSON 6 ================= -->
+    <section class="lesson" id="lesson6" data-lesson="6">
+      <header class="lesson-head">
+        <span class="lesson-index">06</span>
+        <h2>练习二：读三首简单谱例</h2>
+        <p class="lesson-lead">把刚学的音放进真实的谱子里。点任何一个音符，它会响，并显示音名和简谱。</p>
+        <p class="lesson-time">每首 5 分钟 · 先自己读，再点开对答案</p>
+      </header>
+
+      <div class="lesson-body">
+
+        <h3><span class="h3-num">6.1</span>怎么用这三个练习</h3>
+        <ol class="steps">
+          <li><b>先自己读。</b>用手指从第一个音数到最后一个，把音名说出来，不要急着点。</li>
+          <li><b>再对答案。</b>点「显示音名」，或者逐个点音符，看自己有没有读错。</li>
+          <li><b>最后听。</b>点「播放」，一边听一边用手指跟着谱面走。</li>
+        </ol>
+
+        <div class="exercise" data-melody="twinkle">
+          <div class="ex-head">
+            <div>
+              <p class="ex-kicker">谱例 01 · 4/4 拍 · 2 小节</p>
+              <h3 class="ex-title">小星星（开头）</h3>
+            </div>
+            <div class="ex-actions">
+              <button class="btn btn--primary btn--sm" type="button" data-act="play">播放</button>
+              <button class="btn btn--ghost btn--sm" type="button" data-act="names">显示音名</button>
+              <button class="btn btn--ghost btn--sm" type="button" data-act="stop">停止</button>
+            </div>
+          </div>
+          <div class="ex-staff"></div>
+          <p class="ex-hint">提示：这一首只用到 C4 到 A4，全部在第一间到第二间附近。</p>
+        </div>
+
+        <div class="exercise" data-melody="ode">
+          <div class="ex-head">
+            <div>
+              <p class="ex-kicker">谱例 02 · 4/4 拍 · 4 小节</p>
+              <h3 class="ex-title">欢乐颂（开头）</h3>
+            </div>
+            <div class="ex-actions">
+              <button class="btn btn--primary btn--sm" type="button" data-act="play">播放</button>
+              <button class="btn btn--ghost btn--sm" type="button" data-act="names">显示音名</button>
+              <button class="btn btn--ghost btn--sm" type="button" data-act="stop">停止</button>
+            </div>
+          </div>
+          <div class="ex-staff"></div>
+          <p class="ex-hint">提示：全程只用 C D E F G 五个音，是最标准的入门谱例。</p>
+        </div>
+
+        <div class="exercise" data-melody="mary">
+          <div class="ex-head">
+            <div>
+              <p class="ex-kicker">谱例 03 · 4/4 拍 · 4 小节</p>
+              <h3 class="ex-title">玛丽有只小羊羔</h3>
+            </div>
+            <div class="ex-actions">
+              <button class="btn btn--primary btn--sm" type="button" data-act="play">播放</button>
+              <button class="btn btn--ghost btn--sm" type="button" data-act="names">显示音名</button>
+              <button class="btn btn--ghost btn--sm" type="button" data-act="stop">停止</button>
+            </div>
+          </div>
+          <div class="ex-staff"></div>
+          <p class="ex-hint">提示：注意每小节结尾的二分音符，它要占两拍。</p>
+        </div>
+
+        <div class="takeaway">
+          <span class="takeaway-label">这一课只需要记住</span>
+          <p>读谱不是靠背，是靠数。数熟了，眼睛自然就认得了。</p>
+        </div>
+
+        <button class="done-btn" type="button" data-done="6">标记第 6 课已完成</button>
+      </div>
+    </section>
+
+    <!-- ================= LESSON 7 ================= -->
+    <section class="lesson" id="lesson7" data-lesson="7">
+      <header class="lesson-head">
+        <span class="lesson-index">07</span>
+        <h2>复习、速查、下一步</h2>
+        <p class="lesson-lead">把这一页压缩成一张卡片，随时回来查。最后告诉你接下来该学什么。</p>
+        <p class="lesson-time">每次复习 3 分钟 · 建议连续两周</p>
+      </header>
+
+      <div class="lesson-body">
+
+        <h3><span class="h3-num">7.1</span>每日 10 分钟怎么练</h3>
+        <div class="fact-grid fact-grid--3">
+          <div class="fact"><span class="fact-k">3 分钟</span><p>认音小测做一轮，难度按正确率调整。</p></div>
+          <div class="fact"><span class="fact-k">4 分钟</span><p>读一首谱例：先自己读，再逐个点开对答案。</p></div>
+          <div class="fact"><span class="fact-k">3 分钟</span><p>闭眼回忆三个锚点：C4、G4、C5 分别在哪儿。</p></div>
+        </div>
+
+        <h3><span class="h3-num">7.2</span>五个最常见的卡点</h3>
+        <div class="faq">
+          <details>
+            <summary>线上和间里的音总是搞混，怎么办？</summary>
+            <p>用一个笨办法：拿一张纸，把线和间涂成两种颜色，再把 FACE 和「咪嗦西唻发」各写一遍。手上写过一次，比看十遍有用。</p>
+          </details>
+          <details>
+            <summary>为什么第 2 线是 G，我却总记成别的？</summary>
+            <p>因为你还没把「谱号圈住第 2 线」这个画面记住。回去看第 2 课的那张图，盯着圈圈看 10 秒，再数：第 2 线是 G，往上一个间是 A，再往上是第 3 线 B。</p>
+          </details>
+          <details>
+            <summary>数格子太慢，正常吗？</summary>
+            <p>非常正常。所有人一开始都在数。一般连续两周每天 10 分钟，就会开始「一眼认出」。不要为了快而跳过数格子的阶段。</p>
+          </details>
+          <details>
+            <summary>一定要同时学低音谱号吗？</summary>
+            <p>不用。先把高音谱表认熟，这是旋律最常用的区域。等你要弹左手伴奏、或者看钢琴谱的下半部分时，再学低音谱号，那时候会快很多。</p>
+          </details>
+          <details>
+            <summary>看谱的时候要不要唱出来？</summary>
+            <p>要，非常推荐。边指边唱 do re mi，能把「位置—音名—声音」三者绑在一起。唱不准没关系，目的是建立连接。</p>
+          </details>
+        </div>
+
+        <h3><span class="h3-num">7.3</span>下一步学什么</h3>
+        <ul class="check-list">
+          <li><b>低音谱号</b>：F 谱号，第 4 线是 F。学法和这一页完全一样。</li>
+          <li><b>调号</b>：谱号右边那几个升降号，决定整首曲子的调。</li>
+          <li><b>五线谱上的和弦</b>：几个音上下叠在一起，就是和弦。</li>
+          <li><b>视唱练耳</b>：看着谱子直接唱出来，是提升读谱速度最快的方法。</li>
+        </ul>
+
+        <div class="takeaway takeaway--final">
+          <span class="takeaway-label">最后一句</span>
+          <p>五线谱不是一门知识，是一个工具。用两周，它就长在你手上了。</p>
+        </div>
+
+        <button class="done-btn" type="button" data-done="7">标记第 7 课已完成</button>
+      </div>
+    </section>
+
+    <footer class="site-foot">
+      <p>本站所有谱例均为标准五线谱，声音由浏览器实时合成，无需下载音频。</p>
+      <p class="muted">进度只存在你这台设备的浏览器里，不会上传。</p>
+    </footer>
+
+  </main>
+</div>
+
+<div class="scrim" id="scrim"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
