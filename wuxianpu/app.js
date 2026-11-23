@@ -249,10 +249,10 @@
     var spaceYs = [69, 87, 105, 123];
     var i;
     for (i = 0; i < lineYs.length; i++) {
-      s += '<rect class="band" data-band="第 ' + (i + 1) + ' 线" x="64" y="' + (lineYs[i] - 5) + '" width="456" height="10"/>';
+      s += '<rect class="band" data-band="第 ' + (5 - i) + ' 线" x="64" y="' + (lineYs[i] - 5) + '" width="456" height="10"/>';
     }
     for (i = 0; i < spaceYs.length; i++) {
-      s += '<rect class="band" data-band="第 ' + (i + 1) + ' 间" x="64" y="' + (spaceYs[i] - 5) + '" width="456" height="10"/>';
+      s += '<rect class="band" data-band="第 ' + (4 - i) + ' 间" x="64" y="' + (spaceYs[i] - 5) + '" width="456" height="10"/>';
     }
 
     // 右侧两列标注，避免线与间的文字挤在一起
@@ -887,16 +887,24 @@
       b.textContent = on ? '已完成 · 点击取消' : '标记第 ' + number + ' 课已完成';
     });
 
-    Array.prototype.forEach.call(document.querySelectorAll('.toc a'), function (a) {
+    Array.prototype.forEach.call(document.querySelectorAll('.toc a, .dir-item'), function (a) {
       a.classList.toggle('is-done', !!doneSet[a.dataset.course]);
     });
 
+    var percent = Math.min(100, (count / courseIds.length) * 100) + '%';
     var c = document.getElementById('doneCount');
     if (c) c.textContent = count;
     var total = document.getElementById('doneTotal');
     if (total) total.textContent = courseIds.length;
     var bar = document.getElementById('doneBar');
-    if (bar) bar.style.width = Math.min(100, (count / courseIds.length) * 100) + '%';
+    if (bar) bar.style.width = percent;
+
+    var dirCount = document.getElementById('dirDoneCount');
+    if (dirCount) dirCount.textContent = count;
+    var dirTotal = document.getElementById('dirDoneTotal');
+    if (dirTotal) dirTotal.textContent = courseIds.length;
+    var dirBar = document.getElementById('dirDoneBar');
+    if (dirBar) dirBar.style.width = percent;
 
     store.set('done', courseIds.filter(function (k) { return doneSet[k]; }));
   }
